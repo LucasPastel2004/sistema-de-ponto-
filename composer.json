@@ -16,8 +16,10 @@
     },
     "require-dev": {
         "dedoc/scramble": "^0.11",
+        "fakerphp/faker": "^1.24",
         "larastan/larastan": "^2.0",
         "laravel/pint": "^1.0",
+        "mockery/mockery": "^1.6",
         "pestphp/pest": "^3.0",
         "pestphp/pest-plugin-laravel": "^3.0"
     },
@@ -26,6 +28,11 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -66,7 +73,13 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
-        }
+        },
+        "policy": {
+            "advisories": {
+                "block": false
+            }
+        },
+        "process-timeout": 0
     },
     "minimum-stability": "stable",
     "prefer-stable": true

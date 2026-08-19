@@ -28,7 +28,9 @@ Controllers / API / Filament  →  Services  →  Repositories  →  PostgreSQL
 | Sanctum | Autenticação de API (SPA/Tokens) |
 | Fortify | Autenticação e 2FA na API REST |
 | Spatie Permission | Gestão de perfis e permissões (RBAC) |
-| Pest PHP | Framework de testes |
+| Pest PHP 3 | Framework de testes |
+| Mockery | Mocking de dependências nos testes |
+| FakerPHP | Geração de dados falsos nas factories |
 | Docker & Docker Compose | Ambiente de desenvolvimento |
 
 ## Estratégia de Autenticação e MFA
@@ -77,6 +79,10 @@ docker compose up -d pgsql redis app web
 # Instale as dependências PHP
 docker compose exec app composer install
 
+# Publique as migrations dos pacotes (Sanctum + Spatie Permission)
+docker compose exec app php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+docker compose exec app php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+
 # Gere a chave de encriptação (APP_KEY — usada para AES-256-CBC de PII)
 docker compose exec app php artisan key:generate
 
@@ -90,11 +96,14 @@ docker compose exec app php artisan filament:install --panels
 docker compose exec app php artisan make:filament-user
 ```
 
+> **Nota:** As migrations de `users`, `sessions` e `password_reset_tokens` já estão incluídas
+> no arquivo `2024_01_01_000000_create_users_table.php` dentro do projeto.
+
 ### 4. Verifique o scaffolding com testes
 
 ```bash
-# Execute a suíte de testes Pest para validar que DTOs, Repositories e
-# Controllers nasceram funcionando
+# Execute a suíte de testes Pest para validar que DTOs, Services, Repositories e
+# Controllers estão funcionando — espera 17 testes passando
 docker compose exec app php artisan test
 
 # Ou via Pest diretamente para output mais detalhado
@@ -117,6 +126,8 @@ docker compose ps
 |-----|-----------|
 | `http://localhost:8000/admin` | Painel administrativo (Filament) |
 | `http://localhost:8000/api/v1/pontos` | API REST (requer autenticação Sanctum) |
+| `http://localhost:8000/api/user` | Endpoint de usuário autenticado (Sanctum) |
+| `http://localhost:8000/docs/api` | Documentação da API (Scramble) |
 
 ## Estrutura de Diretórios Principal
 
@@ -129,12 +140,15 @@ app/
 │   ├── Controllers/Api/     # Controllers da API REST
 │   ├── Middleware/           # ForceJsonResponse, AuditLogMiddleware
 │   ├── Requests/            # Form Requests (validação)
-│   └── Resources/           # API Resources (JSON transformers)
+│   └── Resources/           # API Resources (JSON transformers com wrapper data)
 ├── Interfaces/              # Contratos para Repository Pattern
 ├── Models/                  # Eloquent ORM (com encrypted casts LGPD)
 ├── Providers/               # Service Providers (App, Fortify, Repository, Filament)
 ├── Repositories/            # Implementação dos contratos (queries isoladas)
 └── Services/                # Regras de negócio (RegistroPonto, CalculoJornada, etc.)
+database/
+├── factories/               # Model Factories (UserFactory com Hash::make)
+└── migrations/              # Migrations em ordem cronológica
 ```
 
 ## Endpoints da API
@@ -143,6 +157,7 @@ Todas as rotas sob `/api/v1/`, protegidas por `auth:sanctum` e `throttle:api`.
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
+| GET | `/api/user` | Dados do usuário autenticado |
 | GET | `/api/v1/pontos` | Lista histórico de pontos |
 | POST | `/api/v1/pontos` | Registra novo ponto |
 | GET | `/api/v1/pontos/{id}` | Detalhes de um ponto |
@@ -156,6 +171,8 @@ Todas as rotas sob `/api/v1/`, protegidas por `auth:sanctum` e `throttle:api`.
 | GET | `/api/v1/colaboradores/{id}` | Detalhes de um colaborador |
 
 ## Testes
+
+A suíte cobre **17 testes / 44 assertions** com Pest PHP 3:
 
 ```bash
 # Rodar todos os testes
@@ -171,12 +188,54 @@ docker compose exec app ./vendor/bin/pest --filter Feature
 docker compose exec app ./vendor/bin/pest --coverage
 ```
 
+### Cobertura dos testes
+
+| Suite | Testes | O que cobre |
+|-------|--------|-------------|
+| `Unit\DTOs` | 3 | Criação e serialização de `PontoData` |
+| `Unit\Enums` | 2 | Valores e labels do enum `TipoPonto` |
+| `Unit\Services` | 3 | Cálculo de horas trabalhadas e intervalo (`CalculoJornadaService`) |
+| `Feature\Api\AuthenticationTest` | 3 | Rejeição sem token, autenticação Sanctum, rate limiting |
+| `Feature\Api\JustificativaControllerTest` | 2 | Criação e validação de justificativas |
+| `Feature\Api\PontoControllerTest` | 4 | Autenticação, registro, validação e listagem de pontos |
+
+## Observações sobre o ambiente Docker
+
+### Git e ownership no container
+
+O container roda com o usuário `appuser` (UID 1000), mas o volume montado do Windows pode causar conflito de ownership com o Git. Isso já está corrigido no `Dockerfile`:
+
+```dockerfile
+RUN git config --global --add safe.directory /var/www/html
+```
+
+### Composer e timeout
+
+Em máquinas com I/O lento (como Docker Desktop no Windows), o Composer pode atingir o timeout padrão de 300s ao extrair pacotes grandes. O `composer.json` já está configurado com:
+
+```json
+"process-timeout": 0
+```
+
+Isso desativa o timeout e permite extrações demoradas sem erros.
+
+### Hash driver: Argon2id
+
+O projeto usa `HASH_DRIVER=argon2id` no `.env` por conformidade com OWASP. As factories e qualquer código que crie senhas deve usar `Hash::make()` e **não** `bcrypt()` diretamente, para respeitar o driver configurado.
+
+### Roteamento da API (Laravel 11)
+
+O arquivo `bootstrap/app.php` **não** define `apiPrefix`, pois o prefixo é controlado diretamente em `routes/api.php`:
+
+- `GET /api/user` — rota de usuário autenticado (fora do grupo v1)
+- `GET|POST /api/v1/*` — rotas da API versionada
+
 ## Segurança e Conformidade LGPD
 
 | Controle | Implementação |
 |----------|---------------|
 | **Criptografia de PII** | Campos sensíveis (CPF, CNPJ) via cast `encrypted` (AES-256-CBC) |
-| **Senhas** | Argon2id como driver padrão (OWASP) |
+| **Senhas** | Argon2id como driver padrão (OWASP) — `HASH_DRIVER=argon2id` |
 | **API Auth** | Sanctum tokens + Fortify 2FA |
 | **Painel Auth** | Filament Breezy com TOTP |
 | **Rate Limiting** | 60 req/min API, 5 req/min login |

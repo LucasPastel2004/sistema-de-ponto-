@@ -51,7 +51,9 @@ class PontoController extends Controller
 
         $ponto = $this->registroPontoService->registrar($data);
 
-        return response()->json(new PontoResource($ponto), 201);
+        return (new PontoResource($ponto))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(int $id): PontoResource

@@ -68,6 +68,9 @@ RUN chown -R appuser:appuser /var/www/html
 # Switch to non-root user
 USER appuser
 
+# Configure git safe directory
+RUN git config --global --add safe.directory /var/www/html
+
 EXPOSE 9000
 
 CMD ["php-fpm"]
