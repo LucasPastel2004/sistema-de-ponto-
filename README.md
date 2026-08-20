@@ -55,7 +55,7 @@ Essa separação evita conflitos de middleware e views entre Fortify e Filament.
 
 ```bash
 # Clone o repositório e entre no diretório
-git clone <url-do-repositorio> sistema-de-ponto
+git clone https://github.com/LucasPastel2004/sistema-de-ponto- sistema-de-ponto
 cd sistema-de-ponto
 
 # Copie o arquivo de ambiente
