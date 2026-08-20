@@ -47,6 +47,9 @@ COPY docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
 # OPcache configuration for performance
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
+# PHP-FPM pool configuration (mais workers, timeout correto)
+COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('departamento_id')->nullable()->constrained('departamentos')->nullOnDelete();
             $table->foreignId('escala_id')->nullable()->constrained('escalas_trabalho')->nullOnDelete();
             $table->string('nome');
-            $table->text('cpf');
+            $table->string('cpf', 255); // Usando varchar 255 para suportar criptografia futura se necessário
             $table->string('matricula', 50);
             $table->string('cargo')->nullable();
             $table->date('data_admissao');
@@ -27,6 +27,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->unique(['empresa_id', 'matricula']);
+            $table->unique(['empresa_id', 'cpf']); // Garantia no DB contra CPFs duplicados na mesma empresa
             $table->index('user_id');
         });
     }

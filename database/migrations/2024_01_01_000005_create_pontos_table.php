@@ -14,11 +14,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('colaborador_id')->constrained('colaboradores')->cascadeOnDelete();
             $table->string('tipo');
-            $table->timestamp('registrado_em');
+            $table->timestampTz('registrado_em');
             $table->decimal('latitude', 10, 7)->nullable();
             $table->decimal('longitude', 10, 7)->nullable();
             $table->ipAddress('ip_address')->nullable();
-            $table->json('device_info')->nullable();
+            $table->jsonb('device_info')->nullable();
             $table->string('metodo_validacao');
             $table->text('observacao')->nullable();
             $table->boolean('is_manual')->default(false);

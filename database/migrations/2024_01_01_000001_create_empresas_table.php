@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nome_fantasia')->nullable();
             $table->text('cnpj');
             $table->string('inscricao_estadual')->nullable();
-            $table->json('endereco')->nullable();
+            $table->jsonb('endereco')->nullable();
             $table->string('telefone')->nullable();
             $table->string('email')->nullable();
             $table->boolean('ativa')->default(true);

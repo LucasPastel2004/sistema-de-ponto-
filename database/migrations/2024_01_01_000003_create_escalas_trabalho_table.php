@@ -19,7 +19,7 @@ return new class extends Migration
             $table->time('horario_entrada')->nullable();
             $table->time('horario_saida')->nullable();
             $table->integer('intervalo_minutos')->default(60);
-            $table->json('dias_trabalho')->nullable();
+            $table->jsonb('dias_trabalho')->nullable();
             $table->boolean('ativa')->default(true);
             $table->timestamps();
         });
