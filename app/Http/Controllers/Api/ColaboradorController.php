@@ -18,7 +18,21 @@ class ColaboradorController extends Controller
 
     public function index(Request $request): AnonymousResourceCollection
     {
-        $colaboradores = $this->colaboradorRepository->listarAtivos();
+        $this->authorize('viewAny', \App\Models\Colaborador::class);
+
+        $query = \App\Models\Colaborador::query()->ativos();
+        $user = $request->user();
+
+        if (!$user->hasRole('admin') && !$user->hasPermissionTo('gerenciar-pontos') && !$user->hasPermissionTo('aprovar-justificativa')) {
+            $colabId = $user->colaborador?->id ?? -1;
+            $query->where('id', $colabId);
+        } elseif ($user->colaborador) {
+            $query->where('empresa_id', $user->colaborador->empresa_id);
+        }
+
+        $colaboradores = \Spatie\QueryBuilder\QueryBuilder::for($query)
+            ->allowedFilters(['nome', 'matricula', 'departamento_id'])
+            ->paginate(15);
 
         return ColaboradorResource::collection($colaboradores);
     }
@@ -28,6 +42,8 @@ class ColaboradorController extends Controller
         $colaborador = $this->colaboradorRepository->buscarPorId($id);
 
         abort_if(!$colaborador, 404, 'Colaborador não encontrado.');
+        
+        $this->authorize('view', $colaborador);
 
         $colaborador->loadCount('pontos');
 

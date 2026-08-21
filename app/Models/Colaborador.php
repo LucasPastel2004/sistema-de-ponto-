@@ -24,6 +24,7 @@ class Colaborador extends Model
         'escala_id',
         'nome',
         'cpf',
+        'cpf_hash',
         'matricula',
         'cargo',
         'data_admissao',
@@ -39,6 +40,15 @@ class Colaborador extends Model
             'data_demissao' => 'date',
             'ativo' => 'boolean',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Colaborador $colaborador) {
+            if ($colaborador->isDirty('cpf') && $colaborador->cpf) {
+                $colaborador->cpf_hash = hash('sha256', $colaborador->cpf);
+            }
+        });
     }
 
     public function user(): BelongsTo

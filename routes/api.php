@@ -15,8 +15,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::prefix('v1')->middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     // Pontos
-    Route::apiResource('pontos', PontoController::class)->only(['index', 'store', 'show']);
     Route::get('pontos/espelho', [PontoController::class, 'espelho']);
+    Route::apiResource('pontos', PontoController::class)->only(['index', 'store', 'show']);
 
     // Justificativas
     Route::apiResource('justificativas', JustificativaController::class)->only(['index', 'store', 'show']);

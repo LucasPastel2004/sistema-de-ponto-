@@ -22,13 +22,33 @@ class JustificativaController extends Controller
 
     public function index(Request $request): AnonymousResourceCollection
     {
-        $justificativas = $this->justificativaRepository->listarPendentes();
+        $this->authorize('viewAny', \App\Models\Justificativa::class);
+
+        $query = \App\Models\Justificativa::query();
+        $user = $request->user();
+
+        if (!$user->hasRole('admin') && !$user->hasPermissionTo('gerenciar-pontos') && !$user->hasPermissionTo('aprovar-justificativa')) {
+            $colabId = $user->colaborador?->id ?? -1;
+            $query->where('colaborador_id', $colabId);
+        } elseif ($user->colaborador) {
+            $query->whereHas('colaborador', function($q) use ($user) {
+                $q->where('empresa_id', $user->colaborador->empresa_id);
+            });
+        }
+
+        $justificativas = \Spatie\QueryBuilder\QueryBuilder::for($query)
+            ->where('status', \App\Enums\StatusJustificativa::Pendente->value)
+            ->allowedFilters(['colaborador_id', 'tipo', 'data_referencia'])
+            ->allowedSorts(['data_referencia', 'created_at'])
+            ->paginate(15);
 
         return JustificativaResource::collection($justificativas);
     }
 
     public function store(StoreJustificativaRequest $request): JsonResponse
     {
+        $this->authorize('create', [\App\Models\Justificativa::class, (int) $request->colaborador_id]);
+
         $path = null;
         if ($request->hasFile('comprovante')) {
             $path = $request->file('comprovante')->store('comprovantes', 'public');
@@ -47,11 +67,18 @@ class JustificativaController extends Controller
 
         abort_if(!$justificativa, 404, 'Justificativa não encontrada.');
 
+        $this->authorize('view', $justificativa);
+
         return new JustificativaResource($justificativa);
     }
 
     public function aprovar(UpdateJustificativaRequest $request, int $id): JustificativaResource
     {
+        $justificativa = $this->justificativaRepository->buscarPorId($id);
+        abort_if(!$justificativa, 404, 'Justificativa não encontrada.');
+        
+        $this->authorize('aprovar', $justificativa);
+
         $justificativa = $this->justificativaRepository->aprovar(
             $id,
             $request->user()->id,
@@ -63,6 +90,11 @@ class JustificativaController extends Controller
 
     public function rejeitar(UpdateJustificativaRequest $request, int $id): JustificativaResource
     {
+        $justificativa = $this->justificativaRepository->buscarPorId($id);
+        abort_if(!$justificativa, 404, 'Justificativa não encontrada.');
+        
+        $this->authorize('rejeitar', $justificativa);
+
         $justificativa = $this->justificativaRepository->rejeitar(
             $id,
             $request->user()->id,

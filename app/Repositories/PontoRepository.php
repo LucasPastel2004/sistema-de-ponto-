@@ -46,9 +46,10 @@ class PontoRepository implements PontoRepositoryInterface
         $cacheKey = "espelho_ponto_{$colaboradorId}_{$mes}_{$ano}";
 
         return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($colaboradorId, $mes, $ano) {
+            $data = Carbon::create($ano, $mes, 1);
+            
             return Ponto::where('colaborador_id', $colaboradorId)
-                ->whereMonth('registrado_em', $mes)
-                ->whereYear('registrado_em', $ano)
+                ->whereBetween('registrado_em', [$data->copy()->startOfMonth(), $data->copy()->endOfMonth()])
                 ->orderBy('registrado_em')
                 ->get();
         });
@@ -56,8 +57,10 @@ class PontoRepository implements PontoRepositoryInterface
 
     public function buscarPontosHoje(int $colaboradorId): Collection
     {
+        $hoje = now();
+        
         return Ponto::where('colaborador_id', $colaboradorId)
-            ->whereDate('registrado_em', now()->toDateString())
+            ->whereBetween('registrado_em', [$hoje->copy()->startOfDay(), $hoje->copy()->endOfDay()])
             ->orderBy('registrado_em')
             ->get();
     }

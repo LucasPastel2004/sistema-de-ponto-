@@ -27,15 +27,29 @@ class PontoController extends Controller
 
     public function index(Request $request): AnonymousResourceCollection
     {
-        $pontos = QueryBuilder::for(Ponto::class)
+        $this->authorize('viewAny', Ponto::class);
+
+        $query = Ponto::query();
+        $user = $request->user();
+
+        if (!$user->hasRole('admin') && !$user->hasPermissionTo('gerenciar-pontos')) {
+            $colabId = $user->colaborador?->id ?? -1;
+            $query->where('colaborador_id', $colabId);
+        } elseif ($user->colaborador) {
+            $query->whereHas('colaborador', function($q) use ($user) {
+                $q->where('empresa_id', $user->colaborador->empresa_id);
+            });
+        }
+
+        $pontos = QueryBuilder::for($query)
             ->allowedFilters([
                 AllowedFilter::exact('colaborador_id'),
                 AllowedFilter::exact('tipo'),
                 AllowedFilter::callback('data_inicio', function ($query, $value) {
-                    $query->whereDate('registrado_em', '>=', $value);
+                    $query->where('registrado_em', '>=', \Carbon\Carbon::parse($value)->startOfDay());
                 }),
                 AllowedFilter::callback('data_fim', function ($query, $value) {
-                    $query->whereDate('registrado_em', '<=', $value);
+                    $query->where('registrado_em', '<=', \Carbon\Carbon::parse($value)->endOfDay());
                 }),
             ])
             ->allowedSorts(['registrado_em'])
@@ -47,6 +61,8 @@ class PontoController extends Controller
 
     public function store(StorePontoRequest $request): JsonResponse
     {
+        $this->authorize('create', [Ponto::class, (int) $request->colaborador_id]);
+
         $data = PontoData::fromRequest($request);
 
         $ponto = $this->registroPontoService->registrar($data);
@@ -59,6 +75,8 @@ class PontoController extends Controller
     public function show(int $id): PontoResource
     {
         $ponto = Ponto::findOrFail($id);
+        
+        $this->authorize('view', $ponto);
 
         return new PontoResource($ponto);
     }
@@ -70,6 +88,8 @@ class PontoController extends Controller
             'mes' => ['required', 'integer', 'between:1,12'],
             'ano' => ['required', 'integer', 'min:2000', 'max:' . (date('Y') + 1)],
         ]);
+
+        $this->authorize('create', [Ponto::class, (int) $validated['colaborador_id']]);
 
         $dados = $this->espelhoPontoService->gerar(
             (int) $validated['colaborador_id'],

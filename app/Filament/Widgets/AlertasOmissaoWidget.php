@@ -12,16 +12,26 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class AlertasOmissaoWidget extends BaseWidget
 {
+    protected static ?string $pollingInterval = '60s';
+
     public function table(Table $table): Table
     {
         $hoje = today();
-        $colaboradoresComPonto = Ponto::whereDate('registrado_em', $hoje)->pluck('colaborador_id');
 
         return $table
             ->query(
                 Colaborador::query()
+                    ->with('departamento')
                     ->where('ativo', true)
-                    ->whereNotIn('id', $colaboradoresComPonto)
+                    ->whereDoesntHave('pontos', function ($q) use ($hoje) {
+                        $q->whereBetween('registrado_em', [$hoje->copy()->startOfDay(), $hoje->copy()->endOfDay()]);
+                    })
+                    ->addSelect([
+                        'ultimo_ponto_data' => Ponto::select('registrado_em')
+                            ->whereColumn('colaborador_id', 'colaboradores.id')
+                            ->orderBy('registrado_em', 'desc')
+                            ->limit(1)
+                    ])
                     ->orderBy('nome')
                     ->limit(10)
             )
@@ -35,10 +45,9 @@ class AlertasOmissaoWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('ultimo_ponto')
                     ->label('Último Ponto')
                     ->getStateUsing(function (Colaborador $record) {
-                        $ponto = Ponto::where('colaborador_id', $record->id)
-                            ->orderBy('registrado_em', 'desc')
-                            ->first();
-                        return $ponto ? $ponto->registrado_em->format('d/m/Y H:i') : 'Sem registro';
+                        return $record->ultimo_ponto_data 
+                            ? \Carbon\Carbon::parse($record->ultimo_ponto_data)->format('d/m/Y H:i') 
+                            : 'Sem registro';
                     }),
             ]);
     }

@@ -85,11 +85,11 @@ class PontoResource extends Resource
                         return $query
                             ->when(
                                 $data['registrado_de'],
-                                fn ($q, $date) => $q->whereDate('registrado_em', '>=', $date),
+                                fn ($q, $date) => $q->where('registrado_em', '>=', \Carbon\Carbon::parse($date)->startOfDay()),
                             )
                             ->when(
                                 $data['registrado_ate'],
-                                fn ($q, $date) => $q->whereDate('registrado_em', '<=', $date),
+                                fn ($q, $date) => $q->where('registrado_em', '<=', \Carbon\Carbon::parse($date)->endOfDay()),
                             );
                     }),
                 Tables\Filters\SelectFilter::make('colaborador_id')

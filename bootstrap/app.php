@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [
             EnsureFrontendRequestsAreStateful::class,
         ]);
+        
+        $middleware->api(append: [
+            \App\Http\Middleware\AuditLogMiddleware::class,
+        ]);
 
         $middleware->throttleApi();
         $middleware->validateCsrfTokens();

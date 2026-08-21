@@ -12,22 +12,27 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class ResumoJornadaWidget extends BaseWidget
 {
+    protected static ?string $pollingInterval = '60s';
+
     protected function getStats(): array
     {
         $hoje = today();
+        $inicioDia = $hoje->copy()->startOfDay();
+        $fimDia = $hoje->copy()->endOfDay();
 
-        $batidasHoje = Ponto::whereDate('registrado_em', $hoje)->count();
+        $batidasHoje = Ponto::whereBetween('registrado_em', [$inicioDia, $fimDia])->count();
         
-        $presentes = Ponto::whereDate('registrado_em', $hoje)
+        $presentes = Ponto::whereBetween('registrado_em', [$inicioDia, $fimDia])
             ->distinct('colaborador_id')
             ->count('colaborador_id');
             
         $justificativasPendentes = Justificativa::where('status', \App\Enums\StatusJustificativa::Pendente)->count();
         
         // Alertas de omissão (Colaboradores ativos sem ponto hoje)
-        $colaboradoresComPonto = Ponto::whereDate('registrado_em', $hoje)->pluck('colaborador_id');
         $omissao = Colaborador::where('ativo', true)
-            ->whereNotIn('id', $colaboradoresComPonto)
+            ->whereDoesntHave('pontos', function ($q) use ($inicioDia, $fimDia) {
+                $q->whereBetween('registrado_em', [$inicioDia, $fimDia]);
+            })
             ->count();
 
         return [

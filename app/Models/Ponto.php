@@ -64,6 +64,6 @@ class Ponto extends Model
 
     public function scopeHoje(Builder $query): Builder
     {
-        return $query->whereDate('registrado_em', today());
+        return $query->whereBetween('registrado_em', [today()->startOfDay(), today()->endOfDay()]);
     }
 }
