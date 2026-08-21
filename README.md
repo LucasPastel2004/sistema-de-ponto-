@@ -89,6 +89,9 @@ docker compose exec app php artisan key:generate
 # Execute as migrations
 docker compose exec app php artisan migrate
 
+# Execute o seeder de papéis e permissões (Segurança e Autorização)
+docker compose exec app php artisan db:seed --class=RolesAndPermissionsSeeder
+
 # Instale o Filament
 docker compose exec app php artisan filament:install --panels
 
@@ -103,7 +106,7 @@ docker compose exec app php artisan make:filament-user
 
 ```bash
 # Execute a suíte de testes Pest para validar que DTOs, Services, Repositories e
-# Controllers estão funcionando — espera 17 testes passando
+# Controllers estão funcionando — espera 20 testes passando
 docker compose exec app php artisan test
 
 # Ou via Pest diretamente para output mais detalhado
@@ -172,7 +175,7 @@ Todas as rotas sob `/api/v1/`, protegidas por `auth:sanctum` e `throttle:api`.
 
 ## Testes
 
-A suíte cobre **17 testes / 44 assertions** com Pest PHP 3:
+A suíte cobre **20 testes / 47 assertions** com Pest PHP 3:
 
 ```bash
 # Rodar todos os testes
@@ -196,6 +199,7 @@ docker compose exec app ./vendor/bin/pest --coverage
 | `Unit\Enums` | 2 | Valores e labels do enum `TipoPonto` |
 | `Unit\Services` | 3 | Cálculo de horas trabalhadas e intervalo (`CalculoJornadaService`) |
 | `Feature\Api\AuthenticationTest` | 3 | Rejeição sem token, autenticação Sanctum, rate limiting |
+| `Feature\Api\AuthorizationTest` | 3 | Autorização de criação de pontos, justificativas e aprovações (BOLA) |
 | `Feature\Api\JustificativaControllerTest` | 2 | Criação e validação de justificativas |
 | `Feature\Api\PontoControllerTest` | 4 | Autenticação, registro, validação e listagem de pontos |
 
