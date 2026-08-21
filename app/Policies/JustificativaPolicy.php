@@ -10,6 +10,8 @@ use App\Models\Colaborador;
 
 class JustificativaPolicy
 {
+    use Traits\ChecksColaboradorAccess;
+
     public function viewAny(User $user): bool
     {
         return true;
@@ -17,40 +19,12 @@ class JustificativaPolicy
 
     public function view(User $user, Justificativa $justificativa): bool
     {
-        $userColab = $user->colaborador;
-        if (!$userColab) {
-            return $user->hasRole('admin');
-        }
-
-        if ($justificativa->colaborador_id === $userColab->id) {
-            return true;
-        }
-
-        if ($user->hasRole('admin') || $user->hasPermissionTo('gerenciar-pontos') || $user->hasPermissionTo('aprovar-justificativa')) {
-            $targetColab = $justificativa->colaborador ?? Colaborador::find($justificativa->colaborador_id);
-            return $targetColab && $targetColab->empresa_id === $userColab->empresa_id;
-        }
-
-        return false;
+        return $this->canAccessColaborador($user, $justificativa->colaborador_id, ['gerenciar-pontos', 'aprovar-justificativa']);
     }
 
     public function create(User $user, int $colaboradorId): bool
     {
-        $userColab = $user->colaborador;
-        if (!$userColab) {
-            return $user->hasRole('admin');
-        }
-
-        if ($colaboradorId === $userColab->id) {
-            return true;
-        }
-
-        if ($user->hasRole('admin') || $user->hasPermissionTo('gerenciar-pontos')) {
-            $targetColab = Colaborador::find($colaboradorId);
-            return $targetColab && $targetColab->empresa_id === $userColab->empresa_id;
-        }
-
-        return false;
+        return $this->canAccessColaborador($user, $colaboradorId, ['gerenciar-pontos']);
     }
 
     public function aprovar(User $user, Justificativa $justificativa): bool
