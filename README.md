@@ -99,7 +99,7 @@ docker compose exec app php artisan filament:install --panels
 docker compose exec app php artisan make:filament-user
 
 # Atribua a role 'admin' ao usuário recém-criado para liberar o acesso ao painel
-docker compose exec app php artisan tinker --execute="App\Models\User::first()->assignRole('admin');"
+docker compose exec app php artisan app:make-admin seu_email@exemplo.com
 ```
 
 > **Nota:** As migrations de `users`, `sessions` e `password_reset_tokens` já estão incluídas
