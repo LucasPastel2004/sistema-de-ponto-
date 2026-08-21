@@ -30,6 +30,8 @@ class AuditLogMiddleware
             DB::table('audit_logs')->insert([
                 'user_id' => $request->user()?->id,
                 'action' => $request->method() . ' ' . $request->path(),
+                'auditable_type' => 'App\\Http\\Requests',
+                'auditable_id' => 0,
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
                 'created_at' => now(),

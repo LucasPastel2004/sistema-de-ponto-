@@ -35,6 +35,10 @@ beforeEach(function () {
         'cargo' => 'Dev',
         'data_admissao' => now(),
     ]);
+
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'aprovar-justificativa']);
+    \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'gerenciar-pontos']);
 });
 
 test('it requires authentication to access pontos', function () {

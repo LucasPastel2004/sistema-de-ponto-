@@ -79,10 +79,6 @@ docker compose up -d pgsql redis app web
 # Instale as dependências PHP
 docker compose exec app composer install
 
-# Publique as migrations dos pacotes (Sanctum + Spatie Permission)
-docker compose exec app php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
-docker compose exec app php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
-
 # Gere a chave de encriptação (APP_KEY — usada para AES-256-CBC de PII)
 docker compose exec app php artisan key:generate
 

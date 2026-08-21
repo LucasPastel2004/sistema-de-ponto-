@@ -29,15 +29,39 @@ class AuthorizationTest extends TestCase
         Role::firstOrCreate(['name' => 'admin'])->givePermissionTo(Permission::all());
     }
 
+    private function createEmpresa(): Empresa
+    {
+        return Empresa::create([
+            'razao_social' => 'Empresa Teste',
+            'nome_fantasia' => 'Teste',
+            'cnpj' => '12345678000199',
+            'ativa' => true,
+        ]);
+    }
+
+    private function createColaborador(User $user, Empresa $empresa): Colaborador
+    {
+        return Colaborador::create([
+            'user_id' => $user->id,
+            'empresa_id' => $empresa->id,
+            'nome' => $user->name,
+            'cpf' => rand(10000000000, 99999999999),
+            'matricula' => 'MAT-' . rand(1000, 9999),
+            'cargo' => 'Analista',
+            'data_admissao' => now()->toDateString(),
+            'ativo' => true,
+        ]);
+    }
+
     public function test_usuario_comum_nao_pode_bater_ponto_para_outro_colaborador(): void
     {
-        $empresa = Empresa::factory()->create();
+        $empresa = $this->createEmpresa();
         
         $user1 = User::factory()->create();
-        $colab1 = Colaborador::factory()->create(['user_id' => $user1->id, 'empresa_id' => $empresa->id]);
+        $colab1 = $this->createColaborador($user1, $empresa);
         
         $user2 = User::factory()->create();
-        $colab2 = Colaborador::factory()->create(['user_id' => $user2->id, 'empresa_id' => $empresa->id]);
+        $colab2 = $this->createColaborador($user2, $empresa);
 
         $this->actingAs($user1);
 
@@ -45,7 +69,7 @@ class AuthorizationTest extends TestCase
             'colaborador_id' => $colab2->id,
             'tipo' => TipoPonto::Entrada->value,
             'registrado_em' => now()->toIso8601String(),
-            'metodo_validacao' => MetodoValidacao::Geolocalizacao->value,
+            'metodo_validacao' => MetodoValidacao::Gps->value,
         ]);
 
         $response->assertStatus(403);
@@ -53,16 +77,19 @@ class AuthorizationTest extends TestCase
 
     public function test_usuario_sem_permissao_nao_pode_aprovar_justificativa(): void
     {
-        $empresa = Empresa::factory()->create();
+        $empresa = $this->createEmpresa();
         
         $user1 = User::factory()->create();
-        $colab1 = Colaborador::factory()->create(['user_id' => $user1->id, 'empresa_id' => $empresa->id]);
+        $colab1 = $this->createColaborador($user1, $empresa);
         
         $user2 = User::factory()->create();
-        $colab2 = Colaborador::factory()->create(['user_id' => $user2->id, 'empresa_id' => $empresa->id]);
+        $colab2 = $this->createColaborador($user2, $empresa);
 
-        $justificativa = Justificativa::factory()->create([
+        $justificativa = Justificativa::create([
             'colaborador_id' => $colab2->id,
+            'data_referencia' => now()->toDateString(),
+            'tipo' => 'Falta',
+            'descricao' => 'Motivo',
             'status' => \App\Enums\StatusJustificativa::Pendente->value
         ]);
 
@@ -77,17 +104,20 @@ class AuthorizationTest extends TestCase
 
     public function test_gestor_pode_aprovar_justificativa_da_sua_empresa(): void
     {
-        $empresa = Empresa::factory()->create();
+        $empresa = $this->createEmpresa();
         
         $gestorUser = User::factory()->create();
         $gestorUser->givePermissionTo('aprovar-justificativa');
-        $gestorColab = Colaborador::factory()->create(['user_id' => $gestorUser->id, 'empresa_id' => $empresa->id]);
+        $gestorColab = $this->createColaborador($gestorUser, $empresa);
         
         $user2 = User::factory()->create();
-        $colab2 = Colaborador::factory()->create(['user_id' => $user2->id, 'empresa_id' => $empresa->id]);
+        $colab2 = $this->createColaborador($user2, $empresa);
 
-        $justificativa = Justificativa::factory()->create([
+        $justificativa = Justificativa::create([
             'colaborador_id' => $colab2->id,
+            'data_referencia' => now()->toDateString(),
+            'tipo' => 'Falta',
+            'descricao' => 'Motivo',
             'status' => \App\Enums\StatusJustificativa::Pendente->value
         ]);
 
