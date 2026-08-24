@@ -70,7 +70,7 @@ class AdminPanelProvider extends PanelProvider
                 'Relatórios',
                 'Configurações',
             ])
-            ->brandName('Portal Ponto - Unopar')
+            ->brandName('Portal Ponto')
             ->databaseNotifications()
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(MaxWidth::Full)

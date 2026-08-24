@@ -43,5 +43,21 @@ class AppServiceProvider extends ServiceProvider
         \Filament\Support\Facades\FilamentAsset::register([
             \Filament\Support\Assets\Css::make('custom-css', asset('css/custom.css')),
         ]);
+
+        \Filament\Support\Facades\FilamentView::registerRenderHook(
+            \Filament\View\PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
+            fn (): string => '<style>
+                body { background: linear-gradient(135deg, #00152b 0%, #003366 100%) !important; }
+                main { background: transparent !important; }
+                .fi-simple-main-content { 
+                    background: rgba(255, 255, 255, 0.97) !important; 
+                    border-top: 6px solid #F15A24 !important; 
+                    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important; 
+                    border-radius: 1.5rem !important; 
+                }
+                .dark body { background: linear-gradient(135deg, #0f172a 0%, #020617 100%) !important; }
+                .dark .fi-simple-main-content { background: rgba(30, 41, 59, 0.9) !important; border-top: 6px solid #F15A24 !important; }
+            </style>'
+        );
     }
 }
