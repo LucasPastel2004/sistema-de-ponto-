@@ -60,27 +60,35 @@ class AppServiceProvider extends ServiceProvider
                     content: "";
                     position: fixed;
                     border-radius: 50%;
-                    filter: blur(100px);
+                    filter: blur(120px);
                     z-index: -1;
-                    animation: floatBlob 12s infinite ease-in-out alternate;
                     pointer-events: none;
                 }
                 html::before {
-                    width: 500px; height: 500px;
-                    background: rgba(241, 90, 36, 0.35); /* Unopar Orange */
-                    top: -150px; left: -150px;
+                    width: 600px; height: 600px;
+                    background: rgba(241, 90, 36, 0.30); /* Unopar Orange */
+                    top: -10%; left: -10%;
+                    animation: floatBlob1 25s infinite ease-in-out;
                 }
                 html::after {
-                    width: 400px; height: 400px;
+                    width: 500px; height: 500px;
                     background: rgba(241, 90, 36, 0.25);
-                    bottom: -100px; right: -100px;
-                    animation-delay: -6s;
+                    bottom: -10%; right: -10%;
+                    animation: floatBlob2 30s infinite ease-in-out;
                 }
                 
-                @keyframes floatBlob {
-                    0% { transform: translate(0px, 0px) scale(1); }
-                    50% { transform: translate(40px, 60px) scale(1.1); }
-                    100% { transform: translate(-20px, -30px) scale(0.9); }
+                @keyframes floatBlob1 {
+                    0% { transform: translate(0vw, 0vh) scale(1); }
+                    33% { transform: translate(50vw, 20vh) scale(1.2); }
+                    66% { transform: translate(20vw, 60vh) scale(0.8); }
+                    100% { transform: translate(0vw, 0vh) scale(1); }
+                }
+                
+                @keyframes floatBlob2 {
+                    0% { transform: translate(0vw, 0vh) scale(1); }
+                    33% { transform: translate(-40vw, -40vh) scale(1.3); }
+                    66% { transform: translate(-60vw, -10vh) scale(0.9); }
+                    100% { transform: translate(0vw, 0vh) scale(1); }
                 }
                 
                 /* Remove any ring utility (Tailwind box-shadow) from the layout */
