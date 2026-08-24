@@ -45,8 +45,13 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         \Filament\Support\Facades\FilamentView::registerRenderHook(
-            \Filament\View\PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
-            fn (): string => '<style>
+            \Filament\View\PanelsRenderHook::HEAD_END,
+            function (): string {
+                if (! request()->routeIs('filament.*.auth.*')) {
+                    return '';
+                }
+                
+                return '<style>
                 html { 
                     background-image: linear-gradient(135deg, #00152b, #003366, #007bff, #003366, #00152b) !important; 
                     background-size: 200% 200% !important;
@@ -116,7 +121,8 @@ class AppServiceProvider extends ServiceProvider
                 
                 /* Button Customization */
                 .fi-btn { border-radius: 0.75rem !important; font-weight: bold !important; }
-            </style>'
+            </style>';
+            }
         );
     }
 }
