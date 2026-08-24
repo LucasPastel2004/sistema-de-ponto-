@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Enums\MetodoValidacao;
+use App\Enums\StatusJustificativa;
 use App\Enums\TipoPonto;
 use App\Models\Colaborador;
 use App\Models\Empresa;
 use App\Models\Justificativa;
-use App\Models\Ponto;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
 class AuthorizationTest extends TestCase
@@ -23,7 +24,7 @@ class AuthorizationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
         Permission::firstOrCreate(['name' => 'aprovar-justificativa']);
         Permission::firstOrCreate(['name' => 'gerenciar-pontos']);
         Role::firstOrCreate(['name' => 'admin'])->givePermissionTo(Permission::all());
@@ -46,7 +47,7 @@ class AuthorizationTest extends TestCase
             'empresa_id' => $empresa->id,
             'nome' => $user->name,
             'cpf' => (string) random_int(10000000000, 99999999999),
-            'matricula' => 'MAT-' . random_int(1000, 9999),
+            'matricula' => 'MAT-'.random_int(1000, 9999),
             'cargo' => 'Analista',
             'data_admissao' => now()->toDateString(),
             'ativo' => true,
@@ -56,10 +57,10 @@ class AuthorizationTest extends TestCase
     public function test_usuario_comum_nao_pode_bater_ponto_para_outro_colaborador(): void
     {
         $empresa = $this->createEmpresa();
-        
+
         $user1 = User::factory()->create();
         $colab1 = $this->createColaborador($user1, $empresa);
-        
+
         $user2 = User::factory()->create();
         $colab2 = $this->createColaborador($user2, $empresa);
 
@@ -78,10 +79,10 @@ class AuthorizationTest extends TestCase
     public function test_usuario_sem_permissao_nao_pode_aprovar_justificativa(): void
     {
         $empresa = $this->createEmpresa();
-        
+
         $user1 = User::factory()->create();
         $colab1 = $this->createColaborador($user1, $empresa);
-        
+
         $user2 = User::factory()->create();
         $colab2 = $this->createColaborador($user2, $empresa);
 
@@ -90,13 +91,13 @@ class AuthorizationTest extends TestCase
             'data_referencia' => now()->toDateString(),
             'tipo' => 'Falta',
             'descricao' => 'Motivo',
-            'status' => \App\Enums\StatusJustificativa::Pendente->value
+            'status' => StatusJustificativa::Pendente->value,
         ]);
 
         $this->actingAs($user1);
 
         $response = $this->patchJson("/api/v1/justificativas/{$justificativa->id}/aprovar", [
-            'status' => \App\Enums\StatusJustificativa::Aprovada->value,
+            'status' => StatusJustificativa::Aprovada->value,
         ]);
 
         $response->assertStatus(403);
@@ -105,11 +106,11 @@ class AuthorizationTest extends TestCase
     public function test_gestor_pode_aprovar_justificativa_da_sua_empresa(): void
     {
         $empresa = $this->createEmpresa();
-        
+
         $gestorUser = User::factory()->create();
         $gestorUser->givePermissionTo('aprovar-justificativa');
         $gestorColab = $this->createColaborador($gestorUser, $empresa);
-        
+
         $user2 = User::factory()->create();
         $colab2 = $this->createColaborador($user2, $empresa);
 
@@ -118,13 +119,13 @@ class AuthorizationTest extends TestCase
             'data_referencia' => now()->toDateString(),
             'tipo' => 'Falta',
             'descricao' => 'Motivo',
-            'status' => \App\Enums\StatusJustificativa::Pendente->value
+            'status' => StatusJustificativa::Pendente->value,
         ]);
 
         $this->actingAs($gestorUser);
 
         $response = $this->patchJson("/api/v1/justificativas/{$justificativa->id}/aprovar", [
-            'status' => \App\Enums\StatusJustificativa::Aprovada->value,
+            'status' => StatusJustificativa::Aprovada->value,
         ]);
 
         $response->assertStatus(200);

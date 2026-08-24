@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Colaborador extends Model
 {
@@ -48,7 +48,7 @@ class Colaborador extends Model
             if (empty($colaborador->matricula)) {
                 // Generate a sequential 6-digit string like 000001, 000002...
                 $lastId = static::max('id') ?? 0;
-                $colaborador->matricula = str_pad((string)($lastId + 1), 6, '0', STR_PAD_LEFT);
+                $colaborador->matricula = str_pad((string) ($lastId + 1), 6, '0', STR_PAD_LEFT);
             }
         });
 

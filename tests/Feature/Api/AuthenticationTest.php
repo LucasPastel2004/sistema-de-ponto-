@@ -15,7 +15,7 @@ test('it accepts valid sanctum token', function () {
     Sanctum::actingAs($user);
 
     $response = $this->getJson('/api/user');
-    
+
     $response->assertStatus(200)
         ->assertJson(['id' => $user->id]);
 });

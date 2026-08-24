@@ -7,6 +7,7 @@ namespace App\Filament\Resources\ColaboradorResource\Pages;
 use App\Filament\Resources\ColaboradorResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Hash;
 
 class EditColaborador extends EditRecord
 {
@@ -26,6 +27,7 @@ class EditColaborador extends EditRecord
             $data['username'] = $user->username;
             $data['email'] = $user->email;
         }
+
         return $data;
     }
 
@@ -36,13 +38,14 @@ class EditColaborador extends EditRecord
             $user->name = $data['nome'];
             $user->username = $data['username'];
             $user->email = $data['email'] ?? null;
-            if (!empty($data['password'])) {
-                $user->password = \Illuminate\Support\Facades\Hash::make($data['password']);
+            if (! empty($data['password'])) {
+                $user->password = Hash::make($data['password']);
             }
             $user->save();
         }
-        
+
         unset($data['username'], $data['email'], $data['password']);
+
         return $data;
     }
 }

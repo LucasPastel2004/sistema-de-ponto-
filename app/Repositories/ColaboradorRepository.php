@@ -10,7 +10,6 @@ use App\Models\Colaborador;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class ColaboradorRepository implements ColaboradorRepositoryInterface

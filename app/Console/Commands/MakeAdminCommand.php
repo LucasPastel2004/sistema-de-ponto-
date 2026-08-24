@@ -29,8 +29,9 @@ class MakeAdminCommand extends Command
         $email = $this->argument('email');
         $user = User::where('email', $email)->first();
 
-        if (!$user) {
+        if (! $user) {
             $this->error("Usuario com email {$email} nao encontrado.");
+
             return;
         }
 

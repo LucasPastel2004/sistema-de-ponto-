@@ -8,6 +8,7 @@ use App\Enums\MetodoValidacao;
 use App\Enums\TipoPonto;
 use App\Filament\Resources\PontoResource\Pages;
 use App\Models\Ponto;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -85,11 +86,11 @@ class PontoResource extends Resource
                         return $query
                             ->when(
                                 $data['registrado_de'],
-                                fn ($q, $date) => $q->where('registrado_em', '>=', \Carbon\Carbon::parse($date)->startOfDay()),
+                                fn ($q, $date) => $q->where('registrado_em', '>=', Carbon::parse($date)->startOfDay()),
                             )
                             ->when(
                                 $data['registrado_ate'],
-                                fn ($q, $date) => $q->where('registrado_em', '<=', \Carbon\Carbon::parse($date)->endOfDay()),
+                                fn ($q, $date) => $q->where('registrado_em', '<=', Carbon::parse($date)->endOfDay()),
                             );
                     }),
                 Tables\Filters\SelectFilter::make('colaborador_id')

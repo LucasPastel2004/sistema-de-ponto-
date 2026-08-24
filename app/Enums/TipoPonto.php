@@ -13,7 +13,7 @@ enum TipoPonto: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Entrada => 'Entrada',
             self::Saida => 'Saída',
             self::IntervaloInicio => 'Início do Intervalo',

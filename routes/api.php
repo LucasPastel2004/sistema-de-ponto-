@@ -26,4 +26,3 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'throttle:api'])->group(functio
     // Colaboradores
     Route::apiResource('colaboradores', ColaboradorController::class)->only(['index', 'show']);
 });
-

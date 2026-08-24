@@ -6,6 +6,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Colaborador;
 use App\Models\Ponto;
+use Carbon\Carbon;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -30,7 +31,7 @@ class AlertasOmissaoWidget extends BaseWidget
                         'ultimo_ponto_data' => Ponto::select('registrado_em')
                             ->whereColumn('colaborador_id', 'colaboradores.id')
                             ->orderBy('registrado_em', 'desc')
-                            ->limit(1)
+                            ->limit(1),
                     ])
                     ->orderBy('nome')
                     ->limit(10)
@@ -45,8 +46,8 @@ class AlertasOmissaoWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('ultimo_ponto')
                     ->label('Último Ponto')
                     ->getStateUsing(function (Colaborador $record) {
-                        return $record->ultimo_ponto_data 
-                            ? \Carbon\Carbon::parse($record->ultimo_ponto_data)->format('d/m/Y H:i') 
+                        return $record->ultimo_ponto_data
+                            ? Carbon::parse($record->ultimo_ponto_data)->format('d/m/Y H:i')
                             : 'Sem registro';
                     }),
             ]);

@@ -37,6 +37,6 @@ class ColaboradorResource extends JsonResource
             return '***.***.***-**';
         }
 
-        return '***.***.***-' . substr($cleanCpf, -2);
+        return '***.***.***-'.substr($cleanCpf, -2);
     }
 }

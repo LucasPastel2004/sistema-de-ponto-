@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages\Auth;
 
-use Filament\Forms\Form;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Component;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Pages\Auth\Login as BaseLogin;
 use Illuminate\Validation\ValidationException;
 
@@ -45,11 +46,11 @@ class Login extends BaseLogin
 
         return [
             $login_type => $data['login'],
-            'password'  => $data['password'],
+            'password' => $data['password'],
         ];
     }
 
-    public function authenticate(): ?\Filament\Http\Responses\Auth\Contracts\LoginResponse
+    public function authenticate(): ?LoginResponse
     {
         try {
             return parent::authenticate();

@@ -12,7 +12,7 @@ trait ChecksColaboradorAccess
     protected function canAccessColaborador(User $user, int $colaboradorId, array $permissions): bool
     {
         $userColab = $user->colaborador;
-        if (!$userColab) {
+        if (! $userColab) {
             return $user->hasRole('admin');
         }
 
@@ -22,6 +22,7 @@ trait ChecksColaboradorAccess
 
         if ($user->hasRole('admin') || $user->hasAnyPermission($permissions)) {
             $targetColab = Colaborador::find($colaboradorId);
+
             return $targetColab && $targetColab->empresa_id === $userColab->empresa_id;
         }
 

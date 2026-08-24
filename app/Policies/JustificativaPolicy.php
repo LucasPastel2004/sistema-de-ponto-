@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Models\Colaborador;
 use App\Models\Justificativa;
 use App\Models\User;
-use App\Models\Colaborador;
 
 class JustificativaPolicy
 {
@@ -27,6 +27,7 @@ class JustificativaPolicy
         if ($colaboradorId === null) {
             return true;
         }
+
         return $this->canAccessColaborador($user, $colaboradorId, ['gerenciar-pontos']);
     }
 
@@ -46,12 +47,12 @@ class JustificativaPolicy
             return true;
         }
 
-        if (!$user->hasPermissionTo('aprovar-justificativa')) {
+        if (! $user->hasPermissionTo('aprovar-justificativa')) {
             return false;
         }
 
         $userColab = $user->colaborador;
-        if (!$userColab) {
+        if (! $userColab) {
             return false;
         }
 
@@ -61,6 +62,7 @@ class JustificativaPolicy
         }
 
         $targetColab = $justificativa->colaborador ?? Colaborador::find($justificativa->colaborador_id);
+
         return $targetColab && $targetColab->empresa_id === $userColab->empresa_id;
     }
 }

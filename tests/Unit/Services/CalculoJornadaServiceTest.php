@@ -16,7 +16,7 @@ test('it calculates worked hours for a simple day', function () {
         new Ponto(['tipo' => TipoPonto::Saida, 'registrado_em' => Carbon::parse('17:00:00')]),
     ]);
 
-    $service = new CalculoJornadaService();
+    $service = new CalculoJornadaService;
     $horas = $service->calcularHorasTrabalhadas($pontos);
 
     // 08:00 to 12:00 = 4h
@@ -31,15 +31,15 @@ test('it calculates interval duration', function () {
         new Ponto(['tipo' => TipoPonto::IntervaloFim, 'registrado_em' => Carbon::parse('13:30:00')]),
     ]);
 
-    $service = new CalculoJornadaService();
+    $service = new CalculoJornadaService;
     $intervalo = $service->calcularHorasIntervalo($pontos);
 
     expect($intervalo)->toBe(1.5);
 });
 
 test('it returns zero hours for empty collection', function () {
-    $service = new CalculoJornadaService();
-    $horas = $service->calcularHorasTrabalhadas(new Collection());
+    $service = new CalculoJornadaService;
+    $horas = $service->calcularHorasTrabalhadas(new Collection);
 
     expect($horas)->toBe(0.0);
 });

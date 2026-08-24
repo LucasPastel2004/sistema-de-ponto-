@@ -7,8 +7,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ColaboradorResource;
 use App\Interfaces\ColaboradorRepositoryInterface;
+use App\Models\Colaborador;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class ColaboradorController extends Controller
 {
@@ -18,19 +20,19 @@ class ColaboradorController extends Controller
 
     public function index(Request $request): AnonymousResourceCollection
     {
-        $this->authorize('viewAny', \App\Models\Colaborador::class);
+        $this->authorize('viewAny', Colaborador::class);
 
-        $query = \App\Models\Colaborador::query()->ativos();
+        $query = Colaborador::query()->ativos();
         $user = $request->user();
 
-        if (!$user->hasRole('admin') && !$user->hasPermissionTo('gerenciar-pontos') && !$user->hasPermissionTo('aprovar-justificativa')) {
+        if (! $user->hasRole('admin') && ! $user->hasPermissionTo('gerenciar-pontos') && ! $user->hasPermissionTo('aprovar-justificativa')) {
             $colabId = $user->colaborador?->id ?? -1;
             $query->where('id', $colabId);
         } elseif ($user->colaborador) {
             $query->where('empresa_id', $user->colaborador->empresa_id);
         }
 
-        $colaboradores = \Spatie\QueryBuilder\QueryBuilder::for($query)
+        $colaboradores = QueryBuilder::for($query)
             ->allowedFilters(['nome', 'matricula', 'departamento_id'])
             ->paginate(15);
 
@@ -41,8 +43,8 @@ class ColaboradorController extends Controller
     {
         $colaborador = $this->colaboradorRepository->buscarPorId($id);
 
-        abort_if(!$colaborador, 404, 'Colaborador não encontrado.');
-        
+        abort_if(! $colaborador, 404, 'Colaborador não encontrado.');
+
         $this->authorize('view', $colaborador);
 
         $colaborador->loadCount('pontos');

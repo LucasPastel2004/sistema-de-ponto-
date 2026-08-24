@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Widgets;
 
+use App\Enums\StatusJustificativa;
 use App\Models\Colaborador;
 use App\Models\Justificativa;
 use App\Models\Ponto;
@@ -21,13 +22,13 @@ class ResumoJornadaWidget extends BaseWidget
         $fimDia = $hoje->copy()->endOfDay();
 
         $batidasHoje = Ponto::whereBetween('registrado_em', [$inicioDia, $fimDia])->count();
-        
+
         $presentes = Ponto::whereBetween('registrado_em', [$inicioDia, $fimDia])
             ->distinct('colaborador_id')
             ->count('colaborador_id');
-            
-        $justificativasPendentes = Justificativa::where('status', \App\Enums\StatusJustificativa::Pendente)->count();
-        
+
+        $justificativasPendentes = Justificativa::where('status', StatusJustificativa::Pendente)->count();
+
         // Alertas de omissão (Colaboradores ativos sem ponto hoje)
         $omissao = Colaborador::where('ativo', true)
             ->whereDoesntHave('pontos', function ($q) use ($inicioDia, $fimDia) {

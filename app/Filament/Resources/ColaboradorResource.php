@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ColaboradorResource\Pages;
+use App\Filament\Resources\ColaboradorResource\RelationManagers\PontosRelationManager;
 use App\Models\Colaborador;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -42,7 +43,9 @@ class ColaboradorResource extends Resource
                                     ->maxLength(255)
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
-                                        if ($operation !== 'create' || empty($state)) return;
+                                        if ($operation !== 'create' || empty($state)) {
+                                            return;
+                                        }
                                         // "Joao da Silva" -> "joao.da.silva"
                                         $username = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '.', iconv('UTF-8', 'ASCII//TRANSLIT', $state)), '.'));
                                         $set('Tabs.Acesso (Login).username', $username); // Need to figure out state path... actually, just $set('username', $username) works for flat state usually.
@@ -90,7 +93,7 @@ class ColaboradorResource extends Resource
                                     ->label('Senha (Digite para alterar)')
                                     ->maxLength(255),
                             ]),
-                    ])->columnSpanFull()
+                    ])->columnSpanFull(),
             ]);
     }
 
@@ -130,11 +133,11 @@ class ColaboradorResource extends Resource
                 ]),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
-            \App\Filament\Resources\ColaboradorResource\RelationManagers\PontosRelationManager::class,
+            PontosRelationManager::class,
         ];
     }
 

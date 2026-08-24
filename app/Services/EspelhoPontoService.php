@@ -16,7 +16,7 @@ class EspelhoPontoService
     public function gerar(int $colaboradorId, int $mes, int $ano): array
     {
         $pontos = $this->pontoRepository->espelhoPonto($colaboradorId, $mes, $ano);
-        
+
         $resumo = $this->calculoJornadaService->gerarResumoMensal($colaboradorId, $mes, $ano);
 
         return [
@@ -31,7 +31,7 @@ class EspelhoPontoService
     public function gerarPdf(int $colaboradorId, int $mes, int $ano): string
     {
         $dados = $this->gerar($colaboradorId, $mes, $ano);
-        
+
         // TODO: Implement PDF generation
         return "storage/app/public/espelhos/{$colaboradorId}_{$ano}_{$mes}.pdf";
     }

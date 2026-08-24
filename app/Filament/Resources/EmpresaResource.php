@@ -53,6 +53,23 @@ class EmpresaResource extends Resource
                     ->maxLength(255),
                 Forms\Components\KeyValue::make('endereco')
                     ->columnSpanFull(),
+                Forms\Components\Fieldset::make('Cerca Virtual (Geofencing)')
+                    ->schema([
+                        Forms\Components\TextInput::make('latitude')
+                            ->numeric()
+                            ->helperText('Ex: -23.550520')
+                            ->maxLength(20),
+                        Forms\Components\TextInput::make('longitude')
+                            ->numeric()
+                            ->helperText('Ex: -46.633308')
+                            ->maxLength(20),
+                        Forms\Components\TextInput::make('raio_ponto_metros')
+                            ->label('Raio Permitido (metros)')
+                            ->numeric()
+                            ->default(20)
+                            ->required()
+                            ->helperText('Distância máxima permitida para o colaborador registrar o ponto pelo celular.'),
+                    ])->columns(3),
                 Forms\Components\Toggle::make('ativa')
                     ->default(true),
             ]);

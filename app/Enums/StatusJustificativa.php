@@ -12,7 +12,7 @@ enum StatusJustificativa: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Pendente => 'Pendente',
             self::Aprovada => 'Aprovada',
             self::Rejeitada => 'Rejeitada',
@@ -21,7 +21,7 @@ enum StatusJustificativa: string
 
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Pendente => 'warning',
             self::Aprovada => 'success',
             self::Rejeitada => 'danger',

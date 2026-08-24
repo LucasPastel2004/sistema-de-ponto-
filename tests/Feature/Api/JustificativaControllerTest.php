@@ -3,14 +3,6 @@
 declare(strict_types=1);
 
 use App\Enums\StatusJustificativa;
-use App\Enums\TipoPonto;
-use App\Models\Colaborador;
-use App\Models\Departamento;
-use App\Models\Empresa;
-use App\Models\EscalaTrabalho;
-use App\Models\Justificativa;
-use App\Models\Ponto;
-use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
@@ -28,7 +20,7 @@ test('it creates justificativa', function () {
     ]);
 
     $response->assertStatus(201);
-    
+
     $this->assertDatabaseHas('justificativas', [
         'colaborador_id' => $this->colaborador->id,
         'tipo' => 'Esquecimento',

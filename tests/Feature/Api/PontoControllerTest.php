@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\MetodoValidacao;
 use App\Enums\TipoPonto;
-use App\Models\Colaborador;
-use App\Models\Departamento;
-use App\Models\Empresa;
-use App\Models\EscalaTrabalho;
 use App\Models\Ponto;
-use App\Models\User;
 use Carbon\Carbon;
 use Laravel\Sanctum\Sanctum;
 
@@ -36,7 +31,7 @@ test('it registers a new ponto successfully', function () {
 
     $response->assertStatus(201)
         ->assertJsonStructure(['data' => ['id', 'tipo', 'registrado_em']]);
-        
+
     $this->assertDatabaseHas('pontos', [
         'colaborador_id' => $this->colaborador->id,
         'tipo' => TipoPonto::Entrada->value,

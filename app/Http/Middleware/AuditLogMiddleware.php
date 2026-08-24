@@ -14,7 +14,7 @@ class AuditLogMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -29,7 +29,7 @@ class AuditLogMiddleware
         if (in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE'])) {
             DB::table('audit_logs')->insert([
                 'user_id' => $request->user()?->id,
-                'action' => $request->method() . ' ' . $request->path(),
+                'action' => $request->method().' '.$request->path(),
                 'auditable_type' => 'App\\Http\\Requests',
                 'auditable_id' => 0,
                 'ip_address' => $request->ip(),

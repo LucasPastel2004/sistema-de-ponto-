@@ -23,6 +23,7 @@ class AdminSeeder extends Seeder
         if ($usuarios->isEmpty()) {
             $this->command->warn('Nenhum usuário encontrado. Crie um primeiro com:');
             $this->command->warn('docker compose exec -it app php artisan make:filament-user');
+
             return;
         }
 
@@ -33,8 +34,9 @@ class AdminSeeder extends Seeder
 
         $user = User::where('email', $email)->first();
 
-        if (!$user) {
+        if (! $user) {
             $this->command->error("Usuário com e-mail '{$email}' não encontrado.");
+
             return;
         }
 

@@ -26,7 +26,7 @@ class JustificativaResource extends JsonResource
                 'label' => $this->status, // Poderia usar um método do enum para label em pt-br
                 'color' => $this->getStatusColor(),
             ],
-            'comprovante_url' => $this->comprovante_path ? asset('storage/' . $this->comprovante_path) : null,
+            'comprovante_url' => $this->comprovante_path ? asset('storage/'.$this->comprovante_path) : null,
             'observacao_aprovador' => $this->observacao_aprovador,
             'aprovado_em' => $this->aprovado_em?->format('Y-m-d H:i:s'),
             'colaborador' => new ColaboradorResource($this->whenLoaded('colaborador')),
@@ -36,7 +36,7 @@ class JustificativaResource extends JsonResource
 
     private function getStatusColor(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'Pendente' => 'warning',
             'Aprovada' => 'success',
             'Rejeitada' => 'danger',

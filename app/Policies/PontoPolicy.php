@@ -6,7 +6,6 @@ namespace App\Policies;
 
 use App\Models\Ponto;
 use App\Models\User;
-use App\Models\Colaborador;
 
 class PontoPolicy
 {
@@ -27,6 +26,7 @@ class PontoPolicy
         if ($colaboradorId === null) {
             return true;
         }
+
         return $this->canAccessColaborador($user, $colaboradorId, ['gerenciar-pontos']);
     }
 }

@@ -17,7 +17,7 @@ class ColaboradorPolicy
     public function view(User $user, Colaborador $colaborador): bool
     {
         $userColab = $user->colaborador;
-        if (!$userColab) {
+        if (! $userColab) {
             return $user->hasRole('admin');
         }
 

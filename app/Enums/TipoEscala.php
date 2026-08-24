@@ -13,7 +13,7 @@ enum TipoEscala: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Fixa => 'Fixa',
             self::Flexivel => 'Flexível',
             self::Revezamento => 'Revezamento',

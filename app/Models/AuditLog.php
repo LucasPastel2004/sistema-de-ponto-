@@ -35,8 +35,8 @@ class AuditLog extends Model
     {
         parent::boot();
 
-        static::updating(fn() => false);
-        static::deleting(fn() => false);
+        static::updating(fn () => false);
+        static::deleting(fn () => false);
     }
 
     public function user(): BelongsTo
