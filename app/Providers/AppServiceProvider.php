@@ -48,9 +48,9 @@ class AppServiceProvider extends ServiceProvider
             \Filament\View\PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
             fn (): string => '<style>
                 html { 
-                    background: linear-gradient(135deg, #00152b, #003366, #007bff, #003366, #00152b) !important; 
+                    background-image: linear-gradient(135deg, #00152b, #003366, #007bff, #003366, #00152b) !important; 
                     background-size: 200% 200% !important;
-                    animation: gradientPulse 12s ease-in-out infinite !important;
+                    animation: gradientPulse 12s ease-in-out infinite;
                     min-height: 100vh; 
                 }
                 
@@ -61,7 +61,8 @@ class AppServiceProvider extends ServiceProvider
                 }
                 
                 body, main, .fi-simple-main, .fi-simple-page, .fi-simple-layout { 
-                    background: transparent !important; 
+                    background-color: transparent !important; 
+                    background-image: none !important;
                     box-shadow: none !important; 
                     border: none !important; 
                     outline: none !important;
@@ -71,18 +72,17 @@ class AppServiceProvider extends ServiceProvider
                 main, .fi-simple-main { --tw-ring-shadow: 0 0 #0000 !important; }
                 
                 /* Text and Logo */
-                .fi-logo, h1, h2, h3, p, label, .fi-form-label, span { color: #f8fafc !important; }
+                .fi-logo, h1, h2, h3, p, label, .fi-form-label, .fi-checkbox-label, span { color: #f8fafc !important; }
                 
                 /* Input Fields and Wrappers */
                 .fi-input-wrapper, input, select {
-                    background: rgba(255, 255, 255, 0.05) !important;
+                    background: rgba(255, 255, 255, 0.95) !important;
                     border: 1px solid rgba(255, 255, 255, 0.2) !important;
-                    color: white !important;
+                    color: #111827 !important;
                     border-radius: 0.75rem !important;
                     box-shadow: none !important;
                 }
-                .fi-input-wrapper input { border: none !important; background: transparent !important; }
-                .fi-input-wrapper * { color: white !important; }
+                .fi-input-wrapper input { border: none !important; background: transparent !important; color: #111827 !important; }
                 
                 input:focus, .fi-input-wrapper:focus-within {
                     border-color: #F15A24 !important;
