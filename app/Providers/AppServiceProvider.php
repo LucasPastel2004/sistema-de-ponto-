@@ -53,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
                 
                 return '<style>
                 html { 
-                    background-image: linear-gradient(135deg, #00152b, #003366, #007bff, #003366, #00152b) !important; 
+                    background-image: linear-gradient(135deg, #00152b, #003366, #00509E, #003366, #00152b) !important; 
                     background-size: 200% 200% !important;
                     animation: gradientPulse 12s ease-in-out infinite;
                     min-height: 100vh; 
