@@ -72,10 +72,14 @@ class AppServiceProvider extends ServiceProvider
                 main, .fi-simple-main { --tw-ring-shadow: 0 0 #0000 !important; }
                 
                 /* Text and Logo */
-                .fi-logo, h1, h2, h3, p, label, .fi-form-label, .fi-checkbox-label, span { color: #f8fafc !important; }
+                .fi-logo, h1, h2, h3, label, .fi-form-label, .fi-checkbox-label, span { color: #f8fafc !important; }
+                p:not(.fi-fo-field-wrp-error-message) { color: #f8fafc !important; }
+                
+                /* Error Messages */
+                .fi-fo-field-wrp-error-message, .fi-fo-field-wrp-error-message * { color: #ef4444 !important; }
                 
                 /* Input Fields and Wrappers */
-                .fi-input-wrapper, input, select {
+                .fi-input-wrapper, input:not([type="checkbox"]), select {
                     background: rgba(255, 255, 255, 0.95) !important;
                     border: 1px solid rgba(255, 255, 255, 0.2) !important;
                     color: #111827 !important;
@@ -87,6 +91,16 @@ class AppServiceProvider extends ServiceProvider
                 input:focus, .fi-input-wrapper:focus-within {
                     border-color: #F15A24 !important;
                     box-shadow: 0 0 0 1px #F15A24 !important;
+                }
+                
+                /* Checkbox Fix */
+                input[type="checkbox"] {
+                    background-color: transparent !important;
+                    border-color: rgba(255, 255, 255, 0.4) !important;
+                }
+                input[type="checkbox"]:checked {
+                    background-color: #F15A24 !important;
+                    border-color: #F15A24 !important;
                 }
                 
                 /* Form Card container (Do not change this box color!) */
