@@ -24,6 +24,7 @@ class Empresa extends Model
         'latitude',
         'longitude',
         'raio_ponto_metros',
+        'bloqueia_ponto_fora_horario',
         'ativa',
     ];
 

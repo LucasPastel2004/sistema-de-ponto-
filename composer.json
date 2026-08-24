@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "barryvdh/laravel-dompdf": "^3.1",
         "filament/filament": "^3.0",
         "jeffgreco13/filament-breezy": "^2.0",
         "laravel/fortify": "^1.0",

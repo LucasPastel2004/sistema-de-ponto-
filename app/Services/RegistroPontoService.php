@@ -34,7 +34,7 @@ class RegistroPontoService
         }
 
         if (! $this->validarHorario($data->colaborador_id, $data->tipo)) {
-            // Em um caso real poderia registrar como atraso ou hora extra
+            throw new InvalidArgumentException('Você está fora do horário permitido (incluindo tolerância) para registrar o ponto.');
         }
 
         return $this->pontoRepository->registrar($data);
@@ -95,7 +95,40 @@ class RegistroPontoService
 
     public function validarHorario(int $colaboradorId, TipoPonto $tipo): bool
     {
-        // TODO: Buscar escala do colaborador e validar o horário registrado vs o esperado
-        return true;
+        $colaborador = Colaborador::with(['empresa', 'escala'])->find($colaboradorId);
+        
+        // Se não tem empresa ou a empresa não exige bloqueio, permite.
+        if (! $colaborador || ! $colaborador->empresa || ! $colaborador->empresa->bloqueia_ponto_fora_horario) {
+            return true;
+        }
+
+        // Se a empresa bloqueia, mas o funcionário não tem escala associada, não podemos bloquear.
+        if (! $colaborador->escala) {
+            return true;
+        }
+
+        $escala = $colaborador->escala;
+        $agora = now();
+        $horaEsperada = null;
+
+        if ($tipo === TipoPonto::Entrada && $escala->horario_entrada) {
+            $horaEsperada = \Carbon\Carbon::createFromFormat('H:i:s', $escala->horario_entrada);
+        } elseif ($tipo === TipoPonto::Saida && $escala->horario_saida) {
+            $horaEsperada = \Carbon\Carbon::createFromFormat('H:i:s', $escala->horario_saida);
+        }
+
+        // Se não tem hora esperada definida na escala para este tipo de ponto, permite.
+        if (! $horaEsperada) {
+            return true;
+        }
+        
+        // Ajusta a hora esperada para hoje, mantendo a hora/minuto configurada.
+        $horaEsperada->setDate($agora->year, $agora->month, $agora->day);
+
+        // Diferença absoluta em minutos
+        $diferencaMinutos = $agora->diffInMinutes($horaEsperada);
+        $tolerancia = $escala->tolerancia_minutos ?? 10;
+
+        return $diferencaMinutos <= $tolerancia;
     }
 }

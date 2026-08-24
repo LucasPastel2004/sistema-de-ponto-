@@ -69,7 +69,11 @@ class EmpresaResource extends Resource
                             ->default(20)
                             ->required()
                             ->helperText('Distância máxima permitida para o colaborador registrar o ponto pelo celular.'),
-                    ])->columns(3),
+                        Forms\Components\Toggle::make('bloqueia_ponto_fora_horario')
+                            ->label('Bloquear Ponto Fora do Horário')
+                            ->default(false)
+                            ->helperText('Se ativado, impede a marcação se o funcionário estiver com atraso ou adiantamento além da tolerância.'),
+                    ])->columns(2),
                 Forms\Components\Toggle::make('ativa')
                     ->default(true),
             ]);

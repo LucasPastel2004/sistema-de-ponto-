@@ -16,11 +16,12 @@ class EspelhoPontoService
     public function gerar(int $colaboradorId, int $mes, int $ano): array
     {
         $pontos = $this->pontoRepository->espelhoPonto($colaboradorId, $mes, $ano);
+        $colaborador = \App\Models\Colaborador::with('escala')->findOrFail($colaboradorId);
 
-        $resumo = $this->calculoJornadaService->gerarResumoMensal($colaboradorId, $mes, $ano);
+        $resumo = $this->calculoJornadaService->gerarResumoMensal($colaborador, $pontos, $mes, $ano);
 
         return [
-            'colaborador_id' => $colaboradorId,
+            'colaborador' => $colaborador,
             'mes' => $mes,
             'ano' => $ano,
             'registros' => $pontos->groupBy(fn ($ponto) => $ponto->registrado_em->format('Y-m-d')),
@@ -32,7 +33,11 @@ class EspelhoPontoService
     {
         $dados = $this->gerar($colaboradorId, $mes, $ano);
 
-        // TODO: Implement PDF generation
-        return "storage/app/public/espelhos/{$colaboradorId}_{$ano}_{$mes}.pdf";
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.espelho-ponto', $dados);
+        
+        $fileName = "espelhos/{$colaboradorId}_{$ano}_{$mes}.pdf";
+        \Illuminate\Support\Facades\Storage::disk('public')->put($fileName, $pdf->output());
+
+        return "storage/{$fileName}";
     }
 }

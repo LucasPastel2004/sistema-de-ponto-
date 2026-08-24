@@ -126,6 +126,33 @@ class ColaboradorResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('baixarEspelho')
+                    ->label('Espelho (PDF)')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('info')
+                    ->form([
+                        Forms\Components\Select::make('mes')
+                            ->label('Mês')
+                            ->options([
+                                1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril',
+                                5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
+                                9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro',
+                            ])
+                            ->default(now()->month)
+                            ->required(),
+                        Forms\Components\Select::make('ano')
+                            ->label('Ano')
+                            ->options(
+                                collect(range(now()->year - 2, now()->year))->mapWithKeys(fn ($year) => [$year => $year])->toArray()
+                            )
+                            ->default(now()->year)
+                            ->required(),
+                    ])
+                    ->action(function (Colaborador $record, array $data) {
+                        $service = app(\App\Services\EspelhoPontoService::class);
+                        $path = $service->gerarPdf($record->id, (int) $data['mes'], (int) $data['ano']);
+                        return response()->download(public_path($path));
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
