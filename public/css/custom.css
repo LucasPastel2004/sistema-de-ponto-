@@ -1,0 +1,78 @@
+/* Modern Filament Tweaks - Unopar Theme */
+.fi-modal-window, 
+.fi-ta-header, 
+.fi-ta-content, 
+.fi-fo-section,
+.fi-wi-stats-overview-stat {
+    border-radius: 1.25rem !important;
+    border: none !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+}
+
+.fi-btn {
+    border-radius: 0.75rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+input, select, textarea {
+    border-radius: 0.5rem !important;
+}
+
+/* Animations for Bater Ponto Widget */
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+.animate-blob {
+  animation: blob 7s infinite;
+}
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+/* Auth Page Customizations (Login) */
+.fi-simple-layout {
+    background: linear-gradient(135deg, #00152b 0%, #003366 100%) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.fi-simple-layout::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(241,90,36,0.15) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.fi-simple-main-content {
+    background: rgba(255, 255, 255, 0.97) !important;
+    backdrop-filter: blur(10px);
+    border-top: 6px solid #F15A24 !important;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important;
+    padding: 2.5rem !important;
+}
+
+.fi-simple-layout .fi-logo {
+    font-size: 1.8rem !important;
+    font-weight: 800 !important;
+    color: #003366 !important;
+    letter-spacing: -0.02em;
+}
+
+/* Dark mode adjustments for Auth */
+.dark .fi-simple-layout {
+    background: linear-gradient(135deg, #0f172a 0%, #020617 100%) !important;
+}
+.dark .fi-simple-main-content {
+    background: rgba(30, 41, 59, 0.8) !important;
+    border-top: 6px solid #F15A24 !important;
+}
+.dark .fi-simple-layout .fi-logo {
+    color: #f8fafc !important;
+}

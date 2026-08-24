@@ -34,10 +34,13 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->emailVerification()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#F15A24'), // Laranja Unopar
                 'danger' => Color::Rose,
+                'info' => Color::hex('#003366'), // Azul Escuro Unopar
+                'success' => Color::Emerald,
+                'warning' => Color::Amber,
             ])
-            ->font('Inter')
+            ->font('Outfit')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -67,7 +70,7 @@ class AdminPanelProvider extends PanelProvider
                 'Relatórios',
                 'Configurações',
             ])
-            ->brandName('Sistema de Ponto')
+            ->brandName('Portal Ponto - Unopar')
             ->databaseNotifications()
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(MaxWidth::Full)
