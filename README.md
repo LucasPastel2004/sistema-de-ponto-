@@ -88,9 +88,6 @@ docker compose exec app php artisan migrate
 # Execute o seeder de papéis e permissões (Segurança e Autorização)
 docker compose exec app php artisan db:seed --class=RolesAndPermissionsSeeder
 
-# Instale o Filament
-docker compose exec app php artisan filament:install --panels
-
 # Crie o usuário administrador
 docker compose exec app php artisan make:filament-user
 
