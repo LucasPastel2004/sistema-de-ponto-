@@ -48,19 +48,31 @@ class AppServiceProvider extends ServiceProvider
             \Filament\View\PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
             fn (): string => '<style>
                 html { background: linear-gradient(135deg, #00152b 0%, #003366 100%) !important; min-height: 100vh; }
-                body, main, .fi-simple-main, .fi-simple-page { background: transparent !important; }
+                body, main, .fi-simple-main, .fi-simple-page, .fi-simple-layout { 
+                    background: transparent !important; 
+                    box-shadow: none !important; 
+                    border: none !important; 
+                    outline: none !important;
+                }
+                
+                /* Remove any ring utility (Tailwind box-shadow) from the layout */
+                main, .fi-simple-main { --tw-ring-shadow: 0 0 #0000 !important; }
                 
                 /* Text and Logo */
                 .fi-logo, h1, h2, h3, p, label, .fi-form-label, span { color: #f8fafc !important; }
                 
-                /* Input Fields */
-                input, select {
+                /* Input Fields and Wrappers */
+                .fi-input-wrapper, input, select {
                     background: rgba(255, 255, 255, 0.05) !important;
                     border: 1px solid rgba(255, 255, 255, 0.2) !important;
                     color: white !important;
                     border-radius: 0.75rem !important;
+                    box-shadow: none !important;
                 }
-                input:focus {
+                .fi-input-wrapper input { border: none !important; background: transparent !important; }
+                .fi-input-wrapper * { color: white !important; }
+                
+                input:focus, .fi-input-wrapper:focus-within {
                     border-color: #F15A24 !important;
                     box-shadow: 0 0 0 1px #F15A24 !important;
                 }
