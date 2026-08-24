@@ -47,16 +47,37 @@ class AppServiceProvider extends ServiceProvider
         \Filament\Support\Facades\FilamentView::registerRenderHook(
             \Filament\View\PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
             fn (): string => '<style>
-                body { background: linear-gradient(135deg, #00152b 0%, #003366 100%) !important; }
-                main { background: transparent !important; }
-                .fi-simple-main-content { 
-                    background: rgba(255, 255, 255, 0.97) !important; 
-                    border-top: 6px solid #F15A24 !important; 
-                    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important; 
-                    border-radius: 1.5rem !important; 
+                html { background: linear-gradient(135deg, #00152b 0%, #003366 100%) !important; min-height: 100vh; }
+                body, main, .fi-simple-main, .fi-simple-page { background: transparent !important; }
+                
+                /* Text and Logo */
+                .fi-logo, h1, h2, h3, p, label, .fi-form-label, span { color: #f8fafc !important; }
+                
+                /* Input Fields */
+                input, select {
+                    background: rgba(255, 255, 255, 0.05) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                    color: white !important;
+                    border-radius: 0.75rem !important;
                 }
-                .dark body { background: linear-gradient(135deg, #0f172a 0%, #020617 100%) !important; }
-                .dark .fi-simple-main-content { background: rgba(30, 41, 59, 0.9) !important; border-top: 6px solid #F15A24 !important; }
+                input:focus {
+                    border-color: #F15A24 !important;
+                    box-shadow: 0 0 0 1px #F15A24 !important;
+                }
+                
+                /* Form Card container in Filament 3 (usually a section inside main) */
+                main section {
+                    background: rgba(255, 255, 255, 0.03) !important;
+                    backdrop-filter: blur(16px);
+                    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                    border-top: 5px solid #F15A24 !important;
+                    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important;
+                    border-radius: 1.5rem !important;
+                    padding: 2.5rem !important;
+                }
+                
+                /* Button Customization is already okay but let us ensure it stands out */
+                .fi-btn { border-radius: 0.75rem !important; font-weight: bold !important; }
             </style>'
         );
     }
