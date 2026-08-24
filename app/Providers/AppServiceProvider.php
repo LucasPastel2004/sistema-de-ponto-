@@ -48,16 +48,16 @@ class AppServiceProvider extends ServiceProvider
             \Filament\View\PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
             fn (): string => '<style>
                 html { 
-                    background: linear-gradient(45deg, #00152b, #003366, #F15A24, #00152b) !important; 
+                    background: linear-gradient(135deg, #00152b, #003366, #F15A24, #003366, #00152b) !important; 
                     background-size: 400% 400% !important;
                     animation: gradientPulse 15s ease infinite !important;
                     min-height: 100vh; 
                 }
                 
                 @keyframes gradientPulse {
-                    0% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                    100% { background-position: 0% 50%; }
+                    0% { background-position: 0% 0%; }
+                    50% { background-position: 100% 100%; }
+                    100% { background-position: 0% 0%; }
                 }
                 
                 body, main, .fi-simple-main, .fi-simple-page, .fi-simple-layout { 
