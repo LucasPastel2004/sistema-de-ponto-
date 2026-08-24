@@ -22,8 +22,11 @@ class PontoPolicy
         return $this->canAccessColaborador($user, $ponto->colaborador_id, ['gerenciar-pontos']);
     }
 
-    public function create(User $user, int $colaboradorId): bool
+    public function create(User $user, ?int $colaboradorId = null): bool
     {
+        if ($colaboradorId === null) {
+            return true;
+        }
         return $this->canAccessColaborador($user, $colaboradorId, ['gerenciar-pontos']);
     }
 }

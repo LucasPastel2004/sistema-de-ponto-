@@ -44,6 +44,14 @@ class Colaborador extends Model
 
     protected static function booted(): void
     {
+        static::creating(function (Colaborador $colaborador) {
+            if (empty($colaborador->matricula)) {
+                // Generate a sequential 6-digit string like 000001, 000002...
+                $lastId = static::max('id') ?? 0;
+                $colaborador->matricula = str_pad((string)($lastId + 1), 6, '0', STR_PAD_LEFT);
+            }
+        });
+
         static::saving(function (Colaborador $colaborador) {
             if ($colaborador->isDirty('cpf') && $colaborador->cpf) {
                 $colaborador->cpf_hash = hash('sha256', $colaborador->cpf);

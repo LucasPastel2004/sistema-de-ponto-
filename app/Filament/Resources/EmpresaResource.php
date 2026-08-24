@@ -24,6 +24,11 @@ class EmpresaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Empresas';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasRole('admin') ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form

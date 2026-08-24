@@ -24,6 +24,11 @@ class ColaboradorResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Colaboradores';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasRole('admin') ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -34,14 +39,19 @@ class ColaboradorResource extends Resource
                             ->schema([
                                 Forms\Components\TextInput::make('nome')
                                     ->required()
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                                        if ($operation !== 'create' || empty($state)) return;
+                                        // "Joao da Silva" -> "joao.da.silva"
+                                        $username = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '.', iconv('UTF-8', 'ASCII//TRANSLIT', $state)), '.'));
+                                        $set('Tabs.Acesso (Login).username', $username); // Need to figure out state path... actually, just $set('username', $username) works for flat state usually.
+                                        $set('username', $username);
+                                    }),
                                 Forms\Components\TextInput::make('cpf')
                                     ->required()
                                     ->maxLength(14)
                                     ->mask('999.999.999-99'),
-                                Forms\Components\TextInput::make('matricula')
-                                    ->required()
-                                    ->maxLength(50),
                                 Forms\Components\TextInput::make('cargo')
                                     ->required()
                                     ->maxLength(255),
@@ -62,6 +72,23 @@ class ColaboradorResource extends Resource
                                 Forms\Components\DatePicker::make('data_demissao'),
                                 Forms\Components\Toggle::make('ativo')
                                     ->default(true),
+                            ]),
+                        Forms\Components\Tabs\Tab::make('Acesso (Login)')
+                            ->schema([
+                                Forms\Components\TextInput::make('username')
+                                    ->required()
+                                    ->label('Nome de Usuário (Ex: joao.silva)')
+                                    ->unique(table: 'users', column: 'username', ignorable: fn ($record) => $record?->user),
+                                Forms\Components\TextInput::make('email')
+                                    ->email()
+                                    ->label('E-mail (Opcional)')
+                                    ->unique(table: 'users', column: 'email', ignorable: fn ($record) => $record?->user),
+                                Forms\Components\TextInput::make('password')
+                                    ->password()
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(fn (?string $state) => filled($state))
+                                    ->label('Senha (Digite para alterar)')
+                                    ->maxLength(255),
                             ]),
                     ])->columnSpanFull()
             ]);
@@ -102,6 +129,13 @@ class ColaboradorResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+    
+    public static function getRelations(): array
+    {
+        return [
+            \App\Filament\Resources\ColaboradorResource\RelationManagers\PontosRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

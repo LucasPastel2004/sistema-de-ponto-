@@ -12,7 +12,7 @@ return [
     'email' => 'email',
     'views' => false,
     'home' => '/admin',
-    'prefix' => '',
+    'prefix' => 'api',
     'domain' => null,
     'limiters' => [
         'login' => 'login',
