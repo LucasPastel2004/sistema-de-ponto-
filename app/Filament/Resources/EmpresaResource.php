@@ -102,6 +102,7 @@ class EmpresaResource extends Resource
                     ])->columns(4),
                 Forms\Components\Repeater::make('polos')
                     ->label('Outros Polos / Filiais (Opcional)')
+                    ->defaultItems(0)
                     ->schema([
                         Forms\Components\TextInput::make('nome')
                             ->label('Nome do Polo')
