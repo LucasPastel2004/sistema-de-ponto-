@@ -26,6 +26,9 @@ class EmpresaResource extends Resource
 
     public static function canViewAny(): bool
     {
+        if (session('view_mode', 'admin') !== 'admin') {
+            return false;
+        }
         return auth()->user()?->hasRole('admin') ?? false;
     }
 
@@ -53,7 +56,7 @@ class EmpresaResource extends Resource
                     ->maxLength(255),
                 Forms\Components\KeyValue::make('endereco')
                     ->columnSpanFull(),
-                Forms\Components\Fieldset::make('Cerca Virtual (Geofencing)')
+                Forms\Components\Fieldset::make('Cerca Virtual - Matriz (Opcional)')
                     ->schema([
                         Forms\Components\TextInput::make('latitude')
                             ->numeric()
@@ -67,9 +70,30 @@ class EmpresaResource extends Resource
                             ->label('Raio Permitido (metros)')
                             ->numeric()
                             ->default(20)
-                            ->required()
-                            ->helperText('Distância máxima permitida para o colaborador registrar o ponto pelo celular.'),
-                        Forms\Components\Toggle::make('bloqueia_ponto_fora_horario')
+                            ->helperText('Distância máxima permitida.'),
+                    ]),
+                Forms\Components\Repeater::make('polos')
+                    ->label('Outros Polos / Filiais (Opcional)')
+                    ->schema([
+                        Forms\Components\TextInput::make('nome')
+                            ->label('Nome do Polo')
+                            ->required(),
+                        Forms\Components\TextInput::make('latitude')
+                            ->numeric()
+                            ->required(),
+                        Forms\Components\TextInput::make('longitude')
+                            ->numeric()
+                            ->required(),
+                        Forms\Components\TextInput::make('raio_ponto_metros')
+                            ->label('Raio (metros)')
+                            ->numeric()
+                            ->default(20)
+                            ->required(),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull()
+                    ->helperText('Adicione polos adicionais onde o funcionário também está autorizado a bater o ponto.'),
+                Forms\Components\Toggle::make('bloqueia_ponto_fora_horario')
                             ->label('Bloquear Ponto Fora do Horário')
                             ->default(false)
                             ->helperText('Se ativado, impede a marcação se o funcionário estiver com atraso ou adiantamento além da tolerância.'),

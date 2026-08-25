@@ -21,6 +21,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Navigation\MenuItem;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 
 class AdminPanelProvider extends PanelProvider
@@ -63,6 +64,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->userMenuItems([
+                'toggle_mode' => MenuItem::make()
+                    ->label(fn () => session('view_mode', 'admin') === 'admin' ? 'Ver como Colaborador' : 'Ver como Admin')
+                    ->icon('heroicon-o-arrows-right-left')
+                    ->url(fn () => route('toggle.mode'))
+                    ->visible(fn () => auth()->user()?->hasRole('admin')),
             ])
             ->navigationGroups([
                 'Gestão de Ponto',

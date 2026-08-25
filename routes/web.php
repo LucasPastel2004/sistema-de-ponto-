@@ -23,3 +23,10 @@ Route::get('/verificar-email/{id}/{hash}', function ($id, $hash) {
     return view('custom-verify-success');
 })->middleware(['signed'])->name('custom.verification.verify');
 
+
+Route::get('/toggle-mode', function () {
+    $current = session('view_mode', 'admin');
+    session(['view_mode' => $current === 'admin' ? 'colaborador' : 'admin']);
+    return back();
+})->name('toggle.mode')->middleware(['web', 'auth']);
+

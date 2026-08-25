@@ -27,6 +27,9 @@ class ColaboradorResource extends Resource
 
     public static function canViewAny(): bool
     {
+        if (session('view_mode', 'admin') !== 'admin') {
+            return false;
+        }
         return auth()->user()?->hasRole('admin') ?? false;
     }
 

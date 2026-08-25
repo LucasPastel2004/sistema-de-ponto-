@@ -123,4 +123,22 @@ class PontoResource extends Resource
             'edit' => Pages\EditPonto::route('/{record}/edit'),
         ];
     }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (session('view_mode', 'admin') === 'admin' && auth()->user()?->hasRole('admin')) {
+            return $query;
+        }
+
+        $userColab = auth()->user()?->colaborador;
+        if ($userColab) {
+            $query->where('colaborador_id', $userColab->id);
+        } else {
+            $query->whereNull('id'); // Hide all if no colaborador profile
+        }
+
+        return $query;
+    }
 }

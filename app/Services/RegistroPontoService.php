@@ -46,7 +46,15 @@ class RegistroPontoService
 
     private function exigeGeolocalizacaoComColaborador(?Colaborador $colaborador): bool
     {
-        if ($colaborador && $colaborador->empresa?->latitude && $colaborador->empresa?->longitude) {
+        if (! $colaborador || ! $colaborador->empresa) {
+            return false;
+        }
+
+        if ($colaborador->empresa->latitude && $colaborador->empresa->longitude) {
+            return true;
+        }
+
+        if (! empty($colaborador->empresa->polos)) {
             return true;
         }
 
@@ -68,20 +76,41 @@ class RegistroPontoService
         }
 
         $empresa = $colaborador->empresa;
-        if (! $empresa->latitude || ! $empresa->longitude) {
-            return true; // Se a empresa não configurou GPS, permite em qualquer lugar
+        $polos = $empresa->polos ?? [];
+
+        // Adiciona a matriz/local legado à lista de polos a checar
+        if ($empresa->latitude && $empresa->longitude) {
+            $polos[] = [
+                'latitude' => $empresa->latitude,
+                'longitude' => $empresa->longitude,
+                'raio_ponto_metros' => $empresa->raio_ponto_metros ?? 20,
+            ];
         }
 
-        $distancia = $this->calcularDistanciaHaversine(
-            (float) $empresa->latitude,
-            (float) $empresa->longitude,
-            $lat,
-            $lng
-        );
+        if (empty($polos)) {
+            return true; // Se a empresa não configurou GPS em nenhum lugar, permite em qualquer lugar
+        }
 
-        $raio = $empresa->raio_ponto_metros ?? 20;
+        foreach ($polos as $polo) {
+            if (! isset($polo['latitude']) || ! isset($polo['longitude'])) {
+                continue;
+            }
 
-        return $distancia <= $raio;
+            $distancia = $this->calcularDistanciaHaversine(
+                (float) $polo['latitude'],
+                (float) $polo['longitude'],
+                $lat,
+                $lng
+            );
+
+            $raio = $polo['raio_ponto_metros'] ?? 20;
+
+            if ($distancia <= $raio) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

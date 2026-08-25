@@ -24,6 +24,7 @@ class Empresa extends Model
         'latitude',
         'longitude',
         'raio_ponto_metros',
+        'polos',
         'bloqueia_ponto_fora_horario',
         'ativa',
     ];
@@ -33,7 +34,9 @@ class Empresa extends Model
         return [
             'cnpj' => 'encrypted',
             'endereco' => 'array',
+            'polos' => 'array',
             'ativa' => 'boolean',
+            'bloqueia_ponto_fora_horario' => 'boolean',
         ];
     }
 
