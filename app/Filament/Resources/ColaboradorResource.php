@@ -90,6 +90,7 @@ class ColaboradorResource extends Resource
                                     ->unique(table: 'users', column: 'username', ignorable: fn ($record) => $record?->user),
                                 Forms\Components\TextInput::make('email')
                                     ->email()
+                                    ->rule('email:rfc,dns')
                                     ->label('E-mail (Opcional)')
                                     ->unique(table: 'users', column: 'email', ignorable: fn ($record) => $record?->user),
                                 Forms\Components\TextInput::make('password')

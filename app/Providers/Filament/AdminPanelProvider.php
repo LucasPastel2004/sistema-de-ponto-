@@ -83,6 +83,9 @@ class AdminPanelProvider extends PanelProvider
                         hasAvatars: false,
                         slug: 'meu-perfil',
                     )
+                    ->myProfileComponents([
+                        'personal_info' => \App\Filament\Pages\CustomPersonalInfo::class,
+                    ])
                     ->enableTwoFactorAuthentication(
                         force: false,
                     )

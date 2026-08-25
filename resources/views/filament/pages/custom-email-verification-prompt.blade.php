@@ -7,4 +7,8 @@
         Não recebeu o e-mail que enviamos?
         {{ $this->resendNotificationAction }}
     </p>
+
+    <div class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+        {{ $this->updateEmailAction }}
+    </div>
 </x-filament-panels::page.simple>

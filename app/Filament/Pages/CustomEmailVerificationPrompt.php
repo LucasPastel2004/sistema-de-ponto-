@@ -25,4 +25,33 @@ class CustomEmailVerificationPrompt extends BasePrompt
             return redirect()->intended(filament()->getUrl());
         }
     }
+
+    public function updateEmailAction(): \Filament\Actions\Action
+    {
+        return \Filament\Actions\Action::make('updateEmail')
+            ->label('Digitou o e-mail errado? Clique aqui para alterar')
+            ->link()
+            ->color('warning')
+            ->form([
+                \Filament\Forms\Components\TextInput::make('email')
+                    ->label('Novo E-mail')
+                    ->email()
+                    ->required()
+                    ->rule('email:rfc,dns')
+                    ->unique('users', 'email', ignorable: auth()->user()),
+            ])
+            ->action(function (array $data) {
+                $user = auth()->user();
+                $user->update(['email' => $data['email']]);
+                
+                // Envia o e-mail pro novo endereço
+                $user->sendEmailVerificationNotification();
+                session()->put('verification_email_sent', true);
+
+                \Filament\Notifications\Notification::make()
+                    ->title('E-mail alterado e link reenviado com sucesso!')
+                    ->success()
+                    ->send();
+            });
+    }
 }
