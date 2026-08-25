@@ -54,7 +54,34 @@ class EmpresaResource extends Resource
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->maxLength(255),
-                Forms\Components\KeyValue::make('endereco')
+                Forms\Components\Fieldset::make('Endereço')
+                    ->statePath('endereco')
+                    ->schema([
+                        Forms\Components\TextInput::make('cep')
+                            ->label('CEP')
+                            ->maxLength(10),
+                        Forms\Components\TextInput::make('logradouro')
+                            ->label('Logradouro (Rua/Av)')
+                            ->maxLength(255)
+                            ->columnSpan(2),
+                        Forms\Components\TextInput::make('numero')
+                            ->label('Número')
+                            ->maxLength(50),
+                        Forms\Components\TextInput::make('complemento')
+                            ->label('Complemento')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('bairro')
+                            ->label('Bairro')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('cidade')
+                            ->label('Cidade')
+                            ->maxLength(255)
+                            ->columnSpan(2),
+                        Forms\Components\TextInput::make('uf')
+                            ->label('UF')
+                            ->maxLength(2),
+                    ])
+                    ->columns(3)
                     ->columnSpanFull(),
                 Forms\Components\Fieldset::make('Cerca Virtual - Matriz (Opcional)')
                     ->schema([
