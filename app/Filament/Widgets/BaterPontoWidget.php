@@ -23,7 +23,9 @@ class BaterPontoWidget extends Widget
 
     public static function canView(): bool
     {
-        return auth()->check() && auth()->user()->colaborador !== null;
+        return auth()->check() 
+            && auth()->user()->colaborador !== null 
+            && session('view_mode', 'admin') !== 'admin';
     }
 
     public function registrarPonto($latitude, $longitude): void
