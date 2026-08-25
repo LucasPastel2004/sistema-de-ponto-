@@ -17,12 +17,18 @@ class CreateColaborador extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $user = DB::transaction(function () use ($data) {
-            return User::create([
+            $newUser = User::create([
                 'name' => $data['nome'],
                 'username' => $data['username'],
                 'email' => $data['email'] ?? null,
                 'password' => Hash::make($data['password']),
             ]);
+            
+            if ($newUser->email) {
+                event(new \Illuminate\Auth\Events\Registered($newUser));
+            }
+            
+            return $newUser;
         });
 
         $data['user_id'] = $user->id;
