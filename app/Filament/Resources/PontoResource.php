@@ -58,17 +58,24 @@ class PontoResource extends Resource
     {
         return $table
             ->defaultSort('registrado_em', 'desc')
+            ->modifyQueryUsing(fn ($query) => $query->select([
+                'id',
+                'colaborador_id',
+                'tipo',
+                'registrado_em',
+                'metodo_validacao',
+                'is_manual'
+            ]))
             ->columns([
                 Tables\Columns\TextColumn::make('colaborador.nome')
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(false),
                 Tables\Columns\TextColumn::make('tipo')
                     ->badge(),
                 Tables\Columns\TextColumn::make('registrado_em')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('metodo_validacao')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('metodo_validacao'),
                 Tables\Columns\IconColumn::make('is_manual')
                     ->boolean(),
             ])

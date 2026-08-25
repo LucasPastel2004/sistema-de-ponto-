@@ -18,6 +18,8 @@ class BaterPontoWidget extends Widget
     protected static string $view = 'filament.widgets.bater-ponto-widget';
 
     protected int|string|array $columnSpan = 'full';
+    
+    protected static bool $isLazy = true;
 
     public static function canView(): bool
     {

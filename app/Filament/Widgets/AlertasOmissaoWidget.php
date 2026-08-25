@@ -13,7 +13,8 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class AlertasOmissaoWidget extends BaseWidget
 {
-    protected static ?string $pollingInterval = '60s';
+    protected static ?string $pollingInterval = '5m';
+    protected static bool $isLazy = true;
 
     public function table(Table $table): Table
     {

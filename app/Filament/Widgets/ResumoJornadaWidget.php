@@ -10,31 +10,58 @@ use App\Models\Justificativa;
 use App\Models\Ponto;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Cache;
 
 class ResumoJornadaWidget extends BaseWidget
 {
-    protected static ?string $pollingInterval = '60s';
+    protected static ?string $pollingInterval = '5m';
+    protected static bool $isLazy = true;
 
     protected function getStats(): array
     {
+        $user = auth()->user();
+        if (!$user) {
+            return [];
+        }
+        
+        $colaboradorModel = $user->colaborador;
+        $empresaId = $colaboradorModel?->empresa_id;
+
         $hoje = today();
         $inicioDia = $hoje->copy()->startOfDay();
         $fimDia = $hoje->copy()->endOfDay();
 
-        $batidasHoje = Ponto::whereBetween('registrado_em', [$inicioDia, $fimDia])->count();
+        $cacheSufix = $empresaId ?? 'admin';
+        $ttl = now()->addMinutes(2);
 
-        $presentes = Ponto::whereBetween('registrado_em', [$inicioDia, $fimDia])
-            ->distinct('colaborador_id')
-            ->count('colaborador_id');
+        $batidasHoje = Cache::remember("dash_batidas_hoje_{$cacheSufix}", $ttl, function () use ($inicioDia, $fimDia, $empresaId) {
+            return Ponto::whereBetween('registrado_em', [$inicioDia, $fimDia])
+                ->when($empresaId, fn($q) => $q->whereHas('colaborador', fn($q2) => $q2->where('empresa_id', $empresaId)))
+                ->count();
+        });
 
-        $justificativasPendentes = Justificativa::where('status', StatusJustificativa::Pendente)->count();
+        $presentes = Cache::remember("dash_presentes_{$cacheSufix}", $ttl, function () use ($inicioDia, $fimDia, $empresaId) {
+            return Ponto::whereBetween('registrado_em', [$inicioDia, $fimDia])
+                ->when($empresaId, fn($q) => $q->whereHas('colaborador', fn($q2) => $q2->where('empresa_id', $empresaId)))
+                ->distinct('colaborador_id')
+                ->count('colaborador_id');
+        });
 
-        // Alertas de omissão (Colaboradores ativos sem ponto hoje)
-        $omissao = Colaborador::where('ativo', true)
-            ->whereDoesntHave('pontos', function ($q) use ($inicioDia, $fimDia) {
-                $q->whereBetween('registrado_em', [$inicioDia, $fimDia]);
-            })
-            ->count();
+        $justificativasPendentes = Cache::remember("dash_justif_{$cacheSufix}", $ttl, function () use ($empresaId) {
+            return Justificativa::where('status', StatusJustificativa::Pendente)
+                ->when($empresaId, fn($q) => $q->whereHas('colaborador', fn($q2) => $q2->where('empresa_id', $empresaId)))
+                ->count();
+        });
+
+        // Alertas de omissão
+        $omissao = Cache::remember("dash_omissao_{$cacheSufix}", $ttl, function () use ($inicioDia, $fimDia, $empresaId) {
+            return Colaborador::where('ativo', true)
+                ->when($empresaId, fn($q) => $q->where('empresa_id', $empresaId))
+                ->whereDoesntHave('pontos', function ($q) use ($inicioDia, $fimDia) {
+                    $q->whereBetween('registrado_em', [$inicioDia, $fimDia]);
+                })
+                ->count();
+        });
 
         return [
             Stat::make('Total de Batidas Hoje', $batidasHoje)
