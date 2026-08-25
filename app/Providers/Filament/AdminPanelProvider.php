@@ -83,6 +83,7 @@ class AdminPanelProvider extends PanelProvider
                         navigationGroup: 'Configurações',
                         hasAvatars: true,
                         slug: 'meu-perfil',
+                        userMenuLabel: 'Meu Perfil',
                     )
                     ->myProfileComponents([
                         'personal_info' => \App\Filament\Pages\CustomPersonalInfo::class,
