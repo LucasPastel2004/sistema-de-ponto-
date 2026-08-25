@@ -49,9 +49,7 @@ class Colaborador extends Model
                 // Usa o máximo atual + 1 com lock para evitar race condition em inserções paralelas.
                 // O campo matricula tem unique constraint implícita via regra de negócio;
                 // em caso de colisão extrema, o banco rejeitará e o usuário poderá tentar novamente.
-                $maxMatricula = (int) (\Illuminate\Support\Facades\DB::table('colaboradores')
-                    ->lockForUpdate()
-                    ->max('id') ?? 0);
+                $maxMatricula = (int) (\Illuminate\Support\Facades\DB::table('colaboradores')->max('id') ?? 0);
                 $colaborador->matricula = str_pad((string) ($maxMatricula + 1), 6, '0', STR_PAD_LEFT);
             }
         });
