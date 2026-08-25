@@ -43,17 +43,7 @@ class ColaboradorResource extends Resource
                             ->schema([
                                 Forms\Components\TextInput::make('nome')
                                     ->required()
-                                    ->maxLength(255)
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
-                                        if ($operation !== 'create' || empty($state)) {
-                                            return;
-                                        }
-                                        // "Joao da Silva" -> "joao.da.silva"
-                                        $username = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '.', iconv('UTF-8', 'ASCII//TRANSLIT', $state)), '.'));
-                                        $set('Tabs.Acesso (Login).username', $username); // Need to figure out state path... actually, just $set('username', $username) works for flat state usually.
-                                        $set('username', $username);
-                                    }),
+                                    ->maxLength(255),
                                 Forms\Components\TextInput::make('cpf')
                                     ->required()
                                     ->maxLength(14)
