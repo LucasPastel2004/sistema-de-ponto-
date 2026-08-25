@@ -16,9 +16,23 @@ class PontosRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('data_hora')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Select::make('tipo')
+                    ->options(\App\Enums\TipoPonto::class)
+                    ->label('Tipo de Batida'),
+                Forms\Components\DateTimePicker::make('registrado_em')
+                    ->label('Data e Hora'),
+                Forms\Components\Select::make('metodo_validacao')
+                    ->options(\App\Enums\MetodoValidacao::class)
+                    ->label('Método de Validação'),
+                Forms\Components\Toggle::make('is_manual')
+                    ->label('Registro Manual?'),
+                Forms\Components\TextInput::make('latitude')
+                    ->numeric(),
+                Forms\Components\TextInput::make('longitude')
+                    ->numeric(),
+                Forms\Components\Textarea::make('observacao')
+                    ->label('Observação')
+                    ->columnSpanFull(),
             ]);
     }
 
