@@ -69,7 +69,7 @@ class AdminPanelProvider extends PanelProvider
                 'toggle_mode' => MenuItem::make()
                     ->label(fn () => session('view_mode', 'admin') === 'admin' ? 'Ver como Colaborador' : 'Ver como Admin')
                     ->icon('heroicon-o-arrows-right-left')
-                    ->url(fn () => route('toggle.mode'))
+                    ->postAction(fn () => route('toggle.mode'))
                     ->visible(fn () => auth()->user()?->hasRole('admin')),
             ])
             ->navigationGroups([

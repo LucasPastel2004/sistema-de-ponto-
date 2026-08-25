@@ -30,11 +30,11 @@ class PontosRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('tipo')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'entrada' => 'success',
-                        'saida' => 'danger',
-                        'pausa' => 'warning',
-                        'retorno' => 'info',
+                    ->color(fn (\App\Enums\TipoPonto $state): string => match ($state) {
+                        \App\Enums\TipoPonto::Entrada => 'success',
+                        \App\Enums\TipoPonto::Saida => 'danger',
+                        \App\Enums\TipoPonto::IntervaloInicio => 'warning',
+                        \App\Enums\TipoPonto::IntervaloFim => 'info',
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('registrado_em')

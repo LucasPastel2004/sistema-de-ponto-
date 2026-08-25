@@ -15,7 +15,15 @@ class ListPontos extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->visible(fn () => session('view_mode', 'admin') === 'admin' && (auth()->user()?->hasRole('admin') ?? false)),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\BaterPontoWidget::class,
         ];
     }
 }
