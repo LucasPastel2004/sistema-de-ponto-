@@ -67,17 +67,17 @@ class ColaboradorResource extends Resource
                                 Forms\Components\Select::make('empresa_id')
                                     ->relationship('empresa', 'razao_social')
                                     ->searchable()
-                                    ->preload(false)
+                                    ->preload()
                                     ->required(),
                                 Forms\Components\Select::make('departamento_id')
                                     ->relationship('departamento', 'nome')
                                     ->searchable()
-                                    ->preload(false)
+                                    ->preload()
                                     ->required(),
                                 Forms\Components\Select::make('escala_id')
                                     ->relationship('escala', 'nome')
                                     ->searchable()
-                                    ->preload(false)
+                                    ->preload()
                                     ->required(),
                                 Forms\Components\DatePicker::make('data_admissao')
                                     ->required(),
