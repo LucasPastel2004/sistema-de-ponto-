@@ -77,8 +77,8 @@ class AppServiceProvider extends ServiceProvider
                 main, .fi-simple-main { --tw-ring-shadow: 0 0 #0000 !important; }
                 
                 /* Text and Logo */
-                .fi-logo, h1, h2, h3, label, .fi-form-label, .fi-checkbox-label, span { color: #f8fafc !important; }
-                p:not(.fi-fo-field-wrp-error-message) { color: #f8fafc !important; }
+                .fi-simple-main .fi-logo, .fi-simple-main h1, .fi-simple-main h2, .fi-simple-main h3, .fi-simple-main label, .fi-simple-main .fi-form-label, .fi-simple-main .fi-checkbox-label, .fi-simple-main span { color: #f8fafc !important; }
+                .fi-simple-main p:not(.fi-fo-field-wrp-error-message) { color: #f8fafc !important; }
                 
                 /* Error Messages */
                 .fi-fo-field-wrp-error-message, .fi-fo-field-wrp-error-message * { color: #ef4444 !important; }
