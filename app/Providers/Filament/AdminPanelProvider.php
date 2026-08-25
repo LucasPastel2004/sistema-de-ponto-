@@ -74,13 +74,14 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(MaxWidth::Full)
+            ->darkMode(true, true)
             ->plugin(
                 BreezyCore::make()
                     ->myProfile(
                         shouldRegisterUserMenu: true,
                         shouldRegisterNavigation: false,
                         navigationGroup: 'Configurações',
-                        hasAvatars: false,
+                        hasAvatars: true,
                         slug: 'meu-perfil',
                     )
                     ->myProfileComponents([
