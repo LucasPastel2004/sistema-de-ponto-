@@ -25,34 +25,51 @@ class RegistroPontoService
             throw new InvalidArgumentException('Registro de ponto duplicado.');
         }
 
+        // Carrega colaborador e empresa UMA ÚNICA VEZ para evitar N+1 queries
+        // nas validações subsequentes de geolocalização e horário.
+        $colaborador = Colaborador::with(['empresa', 'escala'])->find($data->colaborador_id);
+
         if ($data->latitude !== null && $data->longitude !== null) {
-            if (! $this->validarGeolocalizacao($data->colaborador_id, $data->latitude, $data->longitude)) {
+            if (! $this->validarGeolocalizacaoComColaborador($colaborador, $data->latitude, $data->longitude)) {
                 throw new InvalidArgumentException('Você está muito distante da empresa para registrar o ponto.');
             }
-        } elseif ($this->exigeGeolocalizacao($data->colaborador_id)) {
+        } elseif ($this->exigeGeolocalizacaoComColaborador($colaborador)) {
             throw new InvalidArgumentException('Localização (GPS) é obrigatória para bater o ponto.');
         }
 
-        if (! $this->validarHorario($data->colaborador_id, $data->tipo)) {
+        if (! $this->validarHorarioComColaborador($colaborador, $data->tipo)) {
             throw new InvalidArgumentException('Você está fora do horário permitido (incluindo tolerância) para registrar o ponto.');
         }
 
         return $this->pontoRepository->registrar($data);
     }
 
-    private function exigeGeolocalizacao(int $colaboradorId): bool
+    private function exigeGeolocalizacaoComColaborador(?Colaborador $colaborador): bool
     {
-        $colaborador = Colaborador::with('empresa')->find($colaboradorId);
-        if ($colaborador && $colaborador->empresa->latitude && $colaborador->empresa->longitude) {
+        if ($colaborador && $colaborador->empresa?->latitude && $colaborador->empresa?->longitude) {
             return true;
         }
 
         return false;
     }
 
+    /** @deprecated Use validarGeolocalizacaoComColaborador em vez disso para evitar N+1 */
+    private function exigeGeolocalizacao(int $colaboradorId): bool
+    {
+        $colaborador = Colaborador::with('empresa')->find($colaboradorId);
+
+        return $this->exigeGeolocalizacaoComColaborador($colaborador);
+    }
+
     public function validarGeolocalizacao(int $colaboradorId, float $lat, float $lng): bool
     {
         $colaborador = Colaborador::with('empresa')->find($colaboradorId);
+
+        return $this->validarGeolocalizacaoComColaborador($colaborador, $lat, $lng);
+    }
+
+    private function validarGeolocalizacaoComColaborador(?Colaborador $colaborador, float $lat, float $lng): bool
+    {
         if (! $colaborador || ! $colaborador->empresa) {
             return true; // Se não tem empresa vinculada, ignora
         }
@@ -96,7 +113,12 @@ class RegistroPontoService
     public function validarHorario(int $colaboradorId, TipoPonto $tipo): bool
     {
         $colaborador = Colaborador::with(['empresa', 'escala'])->find($colaboradorId);
-        
+
+        return $this->validarHorarioComColaborador($colaborador, $tipo);
+    }
+
+    private function validarHorarioComColaborador(?Colaborador $colaborador, TipoPonto $tipo): bool
+    {
         // Se não tem empresa ou a empresa não exige bloqueio, permite.
         if (! $colaborador || ! $colaborador->empresa || ! $colaborador->empresa->bloqueia_ponto_fora_horario) {
             return true;
@@ -104,6 +126,11 @@ class RegistroPontoService
 
         // Se a empresa bloqueia, mas o funcionário não tem escala associada, não podemos bloquear.
         if (! $colaborador->escala) {
+            return true;
+        }
+
+        // Pontos de intervalo não são bloqueados por horário (ocorrem durante o expediente)
+        if ($tipo === TipoPonto::IntervaloInicio || $tipo === TipoPonto::IntervaloFim) {
             return true;
         }
 
@@ -121,7 +148,7 @@ class RegistroPontoService
         if (! $horaEsperada) {
             return true;
         }
-        
+
         // Ajusta a hora esperada para hoje, mantendo a hora/minuto configurada.
         $horaEsperada->setDate($agora->year, $agora->month, $agora->day);
 

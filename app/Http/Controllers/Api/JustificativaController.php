@@ -40,9 +40,9 @@ class JustificativaController extends Controller
         }
 
         $justificativas = QueryBuilder::for($query)
-            ->where('status', StatusJustificativa::Pendente->value)
-            ->allowedFilters(['colaborador_id', 'tipo', 'data_referencia'])
+            ->allowedFilters(['colaborador_id', 'tipo', 'data_referencia', 'status'])
             ->allowedSorts(['data_referencia', 'created_at'])
+            ->defaultSort('-created_at')
             ->paginate(15);
 
         return JustificativaResource::collection($justificativas);

@@ -33,8 +33,12 @@ class EspelhoPontoService
     {
         $dados = $this->gerar($colaboradorId, $mes, $ano);
 
+        if (! view()->exists('pdf.espelho-ponto')) {
+            throw new \RuntimeException('A template de PDF do espelho de ponto não foi encontrada. Contate o suporte técnico.');
+        }
+
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.espelho-ponto', $dados);
-        
+
         $fileName = "espelhos/{$colaboradorId}_{$ano}_{$mes}.pdf";
         \Illuminate\Support\Facades\Storage::disk('public')->put($fileName, $pdf->output());
 

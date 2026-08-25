@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Widgets;
 
 use App\DTOs\PontoData;
@@ -22,7 +24,7 @@ class BaterPontoWidget extends Widget
         return auth()->check() && auth()->user()->colaborador !== null;
     }
 
-    public function registrarPonto($latitude, $longitude)
+    public function registrarPonto($latitude, $longitude): void
     {
         $user = auth()->user();
         if (! $user->colaborador) {
@@ -38,17 +40,14 @@ class BaterPontoWidget extends Widget
         try {
             $service = app(RegistroPontoService::class);
 
-            // Determinar o tipo de ponto (Entrada ou Saída)
+            // Determinar o próximo tipo de ponto com base no último registrado hoje.
+            // Fluxo esperado: Entrada → IntervaloInicio → IntervaloFim → Saída → (novo ciclo)
             $ultimoPonto = Ponto::where('colaborador_id', $user->colaborador->id)
                 ->whereDate('registrado_em', Carbon::today())
                 ->orderBy('registrado_em', 'desc')
                 ->first();
 
-            $tipo = TipoPonto::Entrada;
-            if ($ultimoPonto) {
-                // Alterna entre entrada e saída
-                $tipo = $ultimoPonto->tipo === TipoPonto::Entrada ? TipoPonto::Saida : TipoPonto::Entrada;
-            }
+            $tipo = $this->determinarProximoTipo($ultimoPonto?->tipo);
 
             $dto = new PontoData(
                 colaborador_id: $user->colaborador->id,
@@ -65,7 +64,7 @@ class BaterPontoWidget extends Widget
 
             Notification::make()
                 ->title('Ponto Registrado!')
-                ->body('Seu ponto de '.$tipo->value.' foi registrado com sucesso às '.now()->format('H:i:s'))
+                ->body('Seu ponto de '.$tipo->label().' foi registrado com sucesso às '.now()->format('H:i:s'))
                 ->success()
                 ->send();
 
@@ -76,5 +75,20 @@ class BaterPontoWidget extends Widget
                 ->danger()
                 ->send();
         }
+    }
+
+    /**
+     * Determina o próximo tipo de ponto com base no último registrado.
+     * Fluxo: Entrada → IntervaloInicio → IntervaloFim → Saída → Entrada (novo ciclo).
+     */
+    private function determinarProximoTipo(?TipoPonto $ultimoTipo): TipoPonto
+    {
+        return match ($ultimoTipo) {
+            TipoPonto::Entrada       => TipoPonto::IntervaloInicio,
+            TipoPonto::IntervaloInicio => TipoPonto::IntervaloFim,
+            TipoPonto::IntervaloFim  => TipoPonto::Saida,
+            TipoPonto::Saida         => TipoPonto::Entrada, // Novo ciclo (ex: hora extra)
+            null                     => TipoPonto::Entrada, // Primeiro ponto do dia
+        };
     }
 }

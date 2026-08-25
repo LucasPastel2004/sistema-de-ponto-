@@ -62,7 +62,11 @@ class CalculoJornadaService
         return round($totalMinutos / 60, 2);
     }
 
-    public function calcularIntervalo(Collection $pontos): ?float
+    /**
+     * Retorna o total de minutos de intervalo do dia.
+     * Alias para calcularHorasIntervalo() * 60, em minutos.
+     */
+    public function calcularIntervalo(Collection $pontos): float
     {
         return $this->calcularHorasIntervalo($pontos) * 60;
     }
@@ -95,13 +99,9 @@ class CalculoJornadaService
             }
         }
 
-        // Falta simples: assume dias de semana como trabalho e subtrai os dias que tem ponto. 
-        // Em um sistema real precisaria subtrair feriados e fds conforme a escala
-        $diasUteisEsperados = 22; // média mensal
-        if ($escala && is_array($escala->dias_trabalho)) {
-            $diasDaSemanaTrabalhados = count($escala->dias_trabalho);
-            $diasUteisEsperados = (int) (($diasDaSemanaTrabalhados / 7) * 30); 
-        }
+        // Calcula dias úteis esperados com base no mês/ano real e nos dias de trabalho da escala.
+        // Se não houver escala, assume dias úteis reais do calendário (seg-sex).
+        $diasUteisEsperados = $this->calcularDiasUteisEsperados($mes, $ano, $escala?->dias_trabalho);
 
         if ($diasTrabalhados < $diasUteisEsperados) {
             $faltas = $diasUteisEsperados - $diasTrabalhados;
@@ -114,5 +114,34 @@ class CalculoJornadaService
             'dias_trabalhados' => $diasTrabalhados,
             'faltas' => $faltas,
         ];
+    }
+
+    /**
+     * Calcula os dias úteis esperados para o mês/ano baseado nos dias de trabalho da escala.
+     * Se $diasTrabalho for null, considera dias úteis de seg a sex.
+     *
+     * @param array<int>|null $diasTrabalho Array com números do dia da semana (0=Dom, 1=Seg..., 6=Sáb)
+     */
+    private function calcularDiasUteisEsperados(int $mes, int $ano, ?array $diasTrabalho = null): int
+    {
+        // Dias de trabalho padrão: segunda (1) a sexta (5)
+        $diasDaSemana = (is_array($diasTrabalho) && count($diasTrabalho) > 0)
+            ? $diasTrabalho
+            : [1, 2, 3, 4, 5];
+
+        $inicio = Carbon::create($ano, $mes, 1)->startOfDay();
+        $fim = $inicio->copy()->endOfMonth();
+
+        $diasUteis = 0;
+        $dia = $inicio->copy();
+
+        while ($dia->lte($fim)) {
+            if (in_array($dia->dayOfWeek, $diasDaSemana, true)) {
+                $diasUteis++;
+            }
+            $dia->addDay();
+        }
+
+        return $diasUteis;
     }
 }

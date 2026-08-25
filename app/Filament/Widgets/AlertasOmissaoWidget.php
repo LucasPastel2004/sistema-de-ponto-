@@ -18,12 +18,14 @@ class AlertasOmissaoWidget extends BaseWidget
     public function table(Table $table): Table
     {
         $hoje = today();
+        $empresaId = auth()->user()?->colaborador?->empresa_id;
 
         return $table
             ->query(
                 Colaborador::query()
                     ->with('departamento')
                     ->where('ativo', true)
+                    ->when($empresaId, fn ($q) => $q->where('empresa_id', $empresaId))
                     ->whereDoesntHave('pontos', function ($q) use ($hoje) {
                         $q->whereBetween('registrado_em', [$hoje->copy()->startOfDay(), $hoje->copy()->endOfDay()]);
                     })

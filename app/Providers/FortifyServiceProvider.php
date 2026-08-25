@@ -45,8 +45,17 @@ class FortifyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // ─── Autenticação customizada para API ─────────────────────────
+        // Aceita 'login' (pode ser email ou username) ou 'email' para compatibilidade.
         Fortify::authenticateUsing(function (Request $request) {
-            $user = User::where('email', $request->email)->first();
+            $loginField = $request->input('login') ?? $request->input('email');
+
+            if (! $loginField) {
+                return null;
+            }
+
+            $user = User::where('email', $loginField)
+                ->orWhere('username', $loginField)
+                ->first();
 
             if ($user && Hash::check($request->password, $user->password)) {
                 return $user;

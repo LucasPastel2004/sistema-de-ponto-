@@ -15,7 +15,15 @@ class PontoRepository implements PontoRepositoryInterface
 {
     public function registrar(PontoData $data): Ponto
     {
-        return Ponto::create($data->toArray());
+        $ponto = Ponto::create($data->toArray());
+
+        // Invalida o cache do espelho do mês atual para o colaborador,
+        // garantindo que novos pontos apareçam imediatamente no espelho.
+        $mes = $data->registrado_em->month;
+        $ano = $data->registrado_em->year;
+        Cache::forget("espelho_ponto_{$data->colaborador_id}_{$mes}_{$ano}");
+
+        return $ponto;
     }
 
     public function buscarPorId(int $id): ?Ponto

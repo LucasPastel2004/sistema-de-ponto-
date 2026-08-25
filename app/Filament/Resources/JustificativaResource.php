@@ -106,23 +106,53 @@ class JustificativaResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\BulkAction::make('aprovar')
-                        ->label('Aprovar')
+                        ->label('Aprovar Selecionadas')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
-                        ->action(fn (Collection $records) => $records->each(fn ($r) => $r->update([
-                            'status' => StatusJustificativa::Aprovada,
-                            'aprovador_id' => auth()->id(),
-                            'aprovado_em' => now(),
-                        ]))),
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records) {
+                            $aprovadas = 0;
+                            foreach ($records as $r) {
+                                // Verifica autorização individualmente (respeita Policy)
+                                if (! auth()->user()->can('aprovar', $r)) {
+                                    continue;
+                                }
+                                $r->update([
+                                    'status' => StatusJustificativa::Aprovada,
+                                    'aprovador_id' => auth()->id(),
+                                    'aprovado_em' => now(),
+                                ]);
+                                $aprovadas++;
+                            }
+                            \Filament\Notifications\Notification::make()
+                                ->title("{$aprovadas} justificativa(s) aprovada(s).")
+                                ->success()
+                                ->send();
+                        }),
                     Tables\Actions\BulkAction::make('rejeitar')
-                        ->label('Rejeitar')
+                        ->label('Rejeitar Selecionadas')
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
-                        ->action(fn (Collection $records) => $records->each(fn ($r) => $r->update([
-                            'status' => StatusJustificativa::Rejeitada,
-                            'aprovador_id' => auth()->id(),
-                            'aprovado_em' => now(),
-                        ]))),
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records) {
+                            $rejeitadas = 0;
+                            foreach ($records as $r) {
+                                // Verifica autorização individualmente (respeita Policy)
+                                if (! auth()->user()->can('rejeitar', $r)) {
+                                    continue;
+                                }
+                                $r->update([
+                                    'status' => StatusJustificativa::Rejeitada,
+                                    'aprovador_id' => auth()->id(),
+                                    'aprovado_em' => now(),
+                                ]);
+                                $rejeitadas++;
+                            }
+                            \Filament\Notifications\Notification::make()
+                                ->title("{$rejeitadas} justificativa(s) rejeitada(s).")
+                                ->danger()
+                                ->send();
+                        }),
                 ]),
             ]);
     }

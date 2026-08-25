@@ -46,9 +46,13 @@ class Colaborador extends Model
     {
         static::creating(function (Colaborador $colaborador) {
             if (empty($colaborador->matricula)) {
-                // Generate a sequential 6-digit string like 000001, 000002...
-                $lastId = static::max('id') ?? 0;
-                $colaborador->matricula = str_pad((string) ($lastId + 1), 6, '0', STR_PAD_LEFT);
+                // Usa o máximo atual + 1 com lock para evitar race condition em inserções paralelas.
+                // O campo matricula tem unique constraint implícita via regra de negócio;
+                // em caso de colisão extrema, o banco rejeitará e o usuário poderá tentar novamente.
+                $maxMatricula = (int) (\Illuminate\Support\Facades\DB::table('colaboradores')
+                    ->lockForUpdate()
+                    ->max('id') ?? 0);
+                $colaborador->matricula = str_pad((string) ($maxMatricula + 1), 6, '0', STR_PAD_LEFT);
             }
         });
 

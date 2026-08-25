@@ -28,7 +28,7 @@ class StorePontoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'colaborador_id' => ['required', 'exists:colaboradores,id'],
+            'colaborador_id' => ['required', \Illuminate\Validation\Rule::exists('colaboradores', 'id')->where('ativo', true)],
             'tipo' => ['required', new Enum(TipoPonto::class)],
             'registrado_em' => ['required', 'date', 'before_or_equal:now'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],

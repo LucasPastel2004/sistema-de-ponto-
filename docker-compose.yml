@@ -104,7 +104,9 @@ services:
   pgsql:
     image: postgres:16-alpine
     ports:
-      - "5432:5432"
+      # Vinculado a 127.0.0.1 para não expor o banco na internet em produção.
+      # Para desenvolvimento local, altere para "5432:5432" se necessário.
+      - "127.0.0.1:5432:5432"
     environment:
       POSTGRES_DB: ${DB_DATABASE:-ponto_db}
       POSTGRES_USER: ${DB_USERNAME:-postgres}
@@ -123,7 +125,8 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      # Vinculado a 127.0.0.1 para não expor o Redis na internet em produção.
+      - "127.0.0.1:6379:6379"
     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
       - redis_data:/data

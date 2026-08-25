@@ -16,8 +16,13 @@ class EspelhoPontoResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        /** @var \App\Models\Colaborador $colaborador */
+        $colaborador = $this->resource['colaborador'];
+
         return [
-            'colaborador_id' => $this->resource['colaborador_id'],
+            'colaborador_id' => $colaborador->id,
+            'colaborador_nome' => $colaborador->nome,
+            'colaborador_matricula' => $colaborador->matricula,
             'mes' => $this->resource['mes'],
             'ano' => $this->resource['ano'],
             'resumo' => $this->resource['resumo'],
