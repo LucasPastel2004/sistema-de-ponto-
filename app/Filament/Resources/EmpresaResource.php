@@ -87,12 +87,14 @@ class EmpresaResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('latitude')
                             ->numeric()
-                            ->helperText('Ex: -23.550520')
-                            ->maxLength(20),
+                            ->minValue(-90)
+                            ->maxValue(90)
+                            ->helperText('Ex: -23.550520'),
                         Forms\Components\TextInput::make('longitude')
                             ->numeric()
-                            ->helperText('Ex: -46.633308')
-                            ->maxLength(20),
+                            ->minValue(-180)
+                            ->maxValue(180)
+                            ->helperText('Ex: -46.633308'),
                         \App\Filament\Forms\Components\GpsButton::make('gps_matriz'),
                         Forms\Components\TextInput::make('raio_ponto_metros')
                             ->label('Raio Permitido (metros)')
@@ -109,9 +111,13 @@ class EmpresaResource extends Resource
                             ->required(),
                         Forms\Components\TextInput::make('latitude')
                             ->numeric()
+                            ->minValue(-90)
+                            ->maxValue(90)
                             ->required(),
                         Forms\Components\TextInput::make('longitude')
                             ->numeric()
+                            ->minValue(-180)
+                            ->maxValue(180)
                             ->required(),
                         \App\Filament\Forms\Components\GpsButton::make('gps_polo'),
                         Forms\Components\TextInput::make('raio_ponto_metros')
