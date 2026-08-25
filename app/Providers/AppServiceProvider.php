@@ -61,10 +61,6 @@ class AppServiceProvider extends ServiceProvider
         \Filament\Support\Facades\FilamentView::registerRenderHook(
             \Filament\View\PanelsRenderHook::HEAD_END,
             function (): string {
-                if (! request()->routeIs('filament.*.auth.*')) {
-                    return '';
-                }
-
                 return '<style>
                 html {
                     background-image: linear-gradient(135deg, #00152b, #003366, #00509E, #003366, #00152b) !important;
@@ -79,63 +75,47 @@ class AppServiceProvider extends ServiceProvider
                     100% { background-position: 0% 0%; }
                 }
 
-                body, main, .fi-simple-main, .fi-simple-page, .fi-simple-layout {
+                body, .fi-layout, .fi-main, .fi-simple-main, .fi-simple-page, .fi-simple-layout {
                     background-color: transparent !important;
                     background-image: none !important;
-                    box-shadow: none !important;
-                    border: none !important;
-                    outline: none !important;
                 }
 
-                /* Remove any ring utility (Tailwind box-shadow) from the layout */
-                main, .fi-simple-main { --tw-ring-shadow: 0 0 #0000 !important; }
+                /* Oculta ring/sombras padrões de fundo do Filament */
+                .fi-main, .fi-simple-main { --tw-ring-shadow: 0 0 #0000 !important; }
 
-                /* Text and Logo */
-                .fi-simple-main .fi-logo, .fi-simple-main h1, .fi-simple-main h2, .fi-simple-main h3, .fi-simple-main label, .fi-simple-main .fi-form-label, .fi-simple-main .fi-checkbox-label, .fi-simple-main span { color: #f8fafc !important; }
-                .fi-simple-main p:not(.fi-fo-field-wrp-error-message) { color: #f8fafc !important; }
+                /* Efeito de Vidro (Frosted Glass) para os Cards do sistema e da página de Auth */
+                .fi-section, .fi-wi-stats-overview-stat, .fi-modal-window, .fi-simple-main section, .fi-ta-content {
+                    background: rgba(255, 255, 255, 0.05) !important;
+                    backdrop-filter: blur(16px);
+                    -webkit-backdrop-filter: blur(16px);
+                    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                    border-top: 4px solid #F15A24 !important;
+                    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important;
+                    border-radius: 1rem !important;
+                }
 
-                /* Error Messages */
-                .fi-fo-field-wrp-error-message, .fi-fo-field-wrp-error-message * { color: #ef4444 !important; }
+                /* Sidebar e Topbar com vidro fosco mais escuro para não brigar com o fundo */
+                .fi-sidebar, .fi-topbar {
+                    background: rgba(0, 21, 43, 0.6) !important;
+                    backdrop-filter: blur(12px);
+                    -webkit-backdrop-filter: blur(12px);
+                    border-color: rgba(255, 255, 255, 0.1) !important;
+                }
 
-                /* Input Fields and Wrappers */
-                .fi-input-wrapper, input:not([type="checkbox"]), select {
-                    background: rgba(255, 255, 255, 0.95) !important;
-                    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-                    color: #111827 !important;
+                /* Arredondamento dos inputs para manter a estética */
+                .fi-input-wrapper, input, select {
                     border-radius: 0.75rem !important;
-                    box-shadow: none !important;
                 }
-                .fi-input-wrapper input { border: none !important; background: transparent !important; color: #111827 !important; }
 
                 input:focus, .fi-input-wrapper:focus-within {
                     border-color: #F15A24 !important;
                     box-shadow: 0 0 0 1px #F15A24 !important;
                 }
 
-                /* Checkbox Fix */
-                input[type="checkbox"] {
-                    background-color: transparent !important;
-                    border-color: rgba(255, 255, 255, 0.4) !important;
-                }
-                input[type="checkbox"]:checked {
-                    background-color: #F15A24 !important;
-                    border-color: #F15A24 !important;
-                }
-
-                /* Form Card container (Do not change this box color!) */
-                main section {
-                    background: rgba(255, 255, 255, 0.03) !important;
-                    backdrop-filter: blur(16px);
-                    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-                    border-top: 5px solid #F15A24 !important;
-                    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important;
-                    border-radius: 1.5rem !important;
-                    padding: 2.5rem !important;
-                }
-
-                /* Button Customization */
+                /* Arredondamento dos botões */
                 .fi-btn { border-radius: 0.75rem !important; font-weight: bold !important; }
-                /* Oculta texto quebrado "Avat" do avatar */
+
+                /* Oculta texto quebrado "Avat" do avatar (global) */
                 .fi-user-avatar { color: transparent !important; text-indent: -9999px; }
             </style>';
             }

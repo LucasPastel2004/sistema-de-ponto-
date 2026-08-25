@@ -33,6 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('')
             ->login(Login::class)
             ->emailVerification(\App\Filament\Pages\CustomEmailVerificationPrompt::class)
+            ->defaultThemeMode(\Filament\Enums\ThemeMode::Dark)
             ->colors([
                 'primary' => Color::hex('#F15A24'), // Laranja Unopar
                 'danger' => Color::Rose,
