@@ -25,7 +25,8 @@ class ResumoJornadaWidget extends BaseWidget
         }
         
         $colaboradorModel = $user->colaborador;
-        $empresaId = $colaboradorModel?->empresa_id;
+        $isAdminMode = session('view_mode', 'admin') === 'admin' && ($user->hasRole('admin') ?? false);
+        $empresaId = $isAdminMode ? null : $colaboradorModel?->empresa_id;
 
         $hoje = today();
         $inicioDia = $hoje->copy()->startOfDay();

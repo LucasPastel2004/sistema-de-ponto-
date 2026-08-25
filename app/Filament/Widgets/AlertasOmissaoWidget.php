@@ -19,7 +19,9 @@ class AlertasOmissaoWidget extends BaseWidget
     public function table(Table $table): Table
     {
         $hoje = today();
-        $empresaId = auth()->user()?->colaborador?->empresa_id;
+        $user = auth()->user();
+        $isAdminMode = session('view_mode', 'admin') === 'admin' && ($user?->hasRole('admin') ?? false);
+        $empresaId = $isAdminMode ? null : $user?->colaborador?->empresa_id;
 
         return $table
             ->query(
