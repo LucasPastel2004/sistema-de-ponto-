@@ -12,7 +12,7 @@ class JustificativaPolicy
 {
     use Traits\ChecksColaboradorAccess;
 
-    public function viewAny(User $user): bool
+    public function viewAny(): bool
     {
         return true;
     }
@@ -66,3 +66,4 @@ class JustificativaPolicy
         return $targetColab && $targetColab->empresa_id === $userColab->empresa_id;
     }
 }
+

@@ -32,7 +32,7 @@ class ColaboradorResource extends JsonResource
 
     private function maskCpf(string $cpf): string
     {
-        $cleanCpf = preg_replace('/[^0-9]/', '', $cpf);
+        $cleanCpf = preg_replace('/\D/', '', $cpf);
         if (strlen($cleanCpf) !== 11) {
             return '***.***.***-**';
         }

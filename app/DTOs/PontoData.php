@@ -12,16 +12,16 @@ use Carbon\Carbon;
 readonly class PontoData
 {
     public function __construct(
-        public int $colaborador_id,
+        public int $colaboradorId,
         public TipoPonto $tipo,
-        public Carbon $registrado_em,
+        public Carbon $registradoEm,
         public ?float $latitude = null,
         public ?float $longitude = null,
-        public ?string $ip_address = null,
-        public ?array $device_info = null,
-        public MetodoValidacao $metodo_validacao = MetodoValidacao::Manual,
+        public ?string $ipAddress = null,
+        public ?array $deviceInfo = null,
+        public MetodoValidacao $metodoValidacao = MetodoValidacao::Manual,
         public ?string $observacao = null,
-        public bool $is_manual = false,
+        public bool $isManual = false,
     ) {}
 
     public static function fromRequest(StorePontoRequest $request): self

@@ -18,10 +18,8 @@ RUN apk add --no-cache \
     postgresql-dev \
     linux-headers \
     oniguruma-dev \
-    $PHPIZE_DEPS
-
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    "$PHPIZE_DEPS" \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo \
         pdo_pgsql \
@@ -32,10 +30,8 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         bcmath \
         opcache \
         mbstring \
-        pcntl
-
-# Install Redis extension via PECL
-RUN pecl install redis \
+        pcntl \
+    && pecl install redis \
     && docker-php-ext-enable redis
 
 # PHP configuration for production-ready defaults
@@ -54,8 +50,8 @@ COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Create non-root user for security
-RUN addgroup -g ${GID} appuser \
-    && adduser -u ${UID} -G appuser -s /bin/sh -D appuser
+RUN addgroup -g "${GID}" appuser \
+    && adduser -u "${UID}" -G appuser -s /bin/sh -D appuser
 
 # Entrypoint script for queue-worker and scheduler
 # Aguarda PostgreSQL + migrations antes de iniciar o processo
@@ -77,3 +73,4 @@ RUN git config --global --add safe.directory /var/www/html
 EXPOSE 9000
 
 CMD ["php-fpm"]
+

@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-Route::get('/verificar-email/{id}/{hash}', function (Request $request, $id, $hash) {
+Route::get('/verificar-email/{id}/{hash}', function ($id, $hash) {
     $user = User::findOrFail($id);
-    if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+    if (! hash_equals((string) $hash, hash('sha256', $user->getEmailForVerification()))) {
         abort(403, 'Link de verificação inválido.');
     }
     

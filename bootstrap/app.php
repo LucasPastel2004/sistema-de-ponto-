@@ -27,6 +27,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->throttleApi();
         $middleware->validateCsrfTokens();
     })
-    ->withExceptions(function (Exceptions $exceptions) {
+    ->withExceptions(function () {
         //
     })->create();

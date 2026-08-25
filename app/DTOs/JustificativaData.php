@@ -11,12 +11,12 @@ use Carbon\Carbon;
 readonly class JustificativaData
 {
     public function __construct(
-        public int $colaborador_id,
-        public Carbon $data_referencia,
+        public int $colaboradorId,
+        public Carbon $dataReferencia,
         public string $tipo,
         public string $descricao,
-        public ?int $ponto_id = null,
-        public ?string $comprovante_path = null,
+        public ?int $pontoId = null,
+        public ?string $comprovantePath = null,
         public StatusJustificativa $status = StatusJustificativa::Pendente,
     ) {}
 

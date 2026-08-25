@@ -29,3 +29,4 @@ trait ChecksColaboradorAccess
         return false;
     }
 }
+

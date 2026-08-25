@@ -24,7 +24,7 @@ class AuditLogMiddleware
     /**
      * Handle tasks after the response has been sent to the browser.
      */
-    public function terminate(Request $request, Response $response): void
+    public function terminate(Request $request): void
     {
         if (in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE'])) {
             DB::table('audit_logs')->insert([

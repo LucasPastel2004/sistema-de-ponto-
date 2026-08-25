@@ -11,7 +11,7 @@ class PontoPolicy
 {
     use Traits\ChecksColaboradorAccess;
 
-    public function viewAny(User $user): bool
+    public function viewAny(): bool
     {
         return true; // The controller scopes the query
     }

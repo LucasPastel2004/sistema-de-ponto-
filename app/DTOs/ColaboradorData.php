@@ -9,17 +9,17 @@ use Carbon\Carbon;
 readonly class ColaboradorData
 {
     public function __construct(
-        public int $user_id,
-        public int $empresa_id,
+        public int $userId,
+        public int $empresaId,
         public string $nome,
         public string $cpf,
         public string $matricula,
-        public Carbon $data_admissao,
+        public Carbon $dataAdmissao,
         public bool $ativo = true,
-        public ?int $departamento_id = null,
-        public ?int $escala_id = null,
+        public ?int $departamentoId = null,
+        public ?int $escalaId = null,
         public ?string $cargo = null,
-        public ?Carbon $data_demissao = null,
+        public ?Carbon $dataDemissao = null,
     ) {}
 
     public function toArray(): array

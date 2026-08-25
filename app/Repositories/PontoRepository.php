@@ -19,9 +19,9 @@ class PontoRepository implements PontoRepositoryInterface
 
         // Invalida o cache do espelho do mês atual para o colaborador,
         // garantindo que novos pontos apareçam imediatamente no espelho.
-        $mes = $data->registrado_em->month;
-        $ano = $data->registrado_em->year;
-        Cache::forget("espelho_ponto_{$data->colaborador_id}_{$mes}_{$ano}");
+        $mes = $data->registradoEm->month;
+        $ano = $data->registradoEm->year;
+        Cache::forget("espelho_ponto_{$data->colaboradorId}_{$mes}_{$ano}");
 
         return $ponto;
     }

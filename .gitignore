@@ -18,3 +18,7 @@ yarn-error.log
 /.vscode
 /.docker-data
 docker-compose.override.yml
+
+# SSL Keys
+docker/nginx/ssl/server.key
+docker/nginx/ssl/server.crt

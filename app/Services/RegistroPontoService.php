@@ -20,14 +20,14 @@ class RegistroPontoService
     public function registrar(PontoData $data): Ponto
     {
         // Valida se já existe ponto no último minuto para evitar duplicidade
-        $ultimoPonto = $this->pontoRepository->buscarPontosHoje($data->colaborador_id)->last();
-        if ($ultimoPonto && $ultimoPonto->registrado_em->diffInSeconds($data->registrado_em) < 60) {
+        $ultimoPonto = $this->pontoRepository->buscarPontosHoje($data->colaboradorId)->last();
+        if ($ultimoPonto && $ultimoPonto->registrado_em->diffInSeconds($data->registradoEm) < 60) {
             throw new InvalidArgumentException('Registro de ponto duplicado.');
         }
 
         // Carrega colaborador e empresa UMA ÚNICA VEZ para evitar N+1 queries
         // nas validações subsequentes de geolocalização e horário.
-        $colaborador = Colaborador::with(['empresa', 'escala'])->find($data->colaborador_id);
+        $colaborador = Colaborador::with(['empresa', 'escala'])->find($data->colaboradorId);
 
         if ($data->latitude !== null && $data->longitude !== null) {
             if (! $this->validarGeolocalizacaoComColaborador($colaborador, $data->latitude, $data->longitude)) {
@@ -53,13 +53,6 @@ class RegistroPontoService
         return false;
     }
 
-    /** @deprecated Use validarGeolocalizacaoComColaborador em vez disso para evitar N+1 */
-    private function exigeGeolocalizacao(int $colaboradorId): bool
-    {
-        $colaborador = Colaborador::with('empresa')->find($colaboradorId);
-
-        return $this->exigeGeolocalizacaoComColaborador($colaborador);
-    }
 
     public function validarGeolocalizacao(int $colaboradorId, float $lat, float $lng): bool
     {
@@ -119,18 +112,7 @@ class RegistroPontoService
 
     private function validarHorarioComColaborador(?Colaborador $colaborador, TipoPonto $tipo): bool
     {
-        // Se não tem empresa ou a empresa não exige bloqueio, permite.
-        if (! $colaborador || ! $colaborador->empresa || ! $colaborador->empresa->bloqueia_ponto_fora_horario) {
-            return true;
-        }
-
-        // Se a empresa bloqueia, mas o funcionário não tem escala associada, não podemos bloquear.
-        if (! $colaborador->escala) {
-            return true;
-        }
-
-        // Pontos de intervalo não são bloqueados por horário (ocorrem durante o expediente)
-        if ($tipo === TipoPonto::IntervaloInicio || $tipo === TipoPonto::IntervaloFim) {
+        if (! $colaborador || ! $colaborador->empresa || ! $colaborador->empresa->bloqueia_ponto_fora_horario || ! $colaborador->escala || $tipo === TipoPonto::IntervaloInicio || $tipo === TipoPonto::IntervaloFim) {
             return true;
         }
 
@@ -159,3 +141,4 @@ class RegistroPontoService
         return $diferencaMinutos <= $tolerancia;
     }
 }
+

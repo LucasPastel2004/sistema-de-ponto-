@@ -19,6 +19,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class JustificativaController extends Controller
 {
+    private const MSG_NOT_FOUND = 'Justificativa no encontrada.';
     public function __construct(
         private readonly JustificativaRepositoryInterface $justificativaRepository
     ) {}
@@ -68,7 +69,7 @@ class JustificativaController extends Controller
     {
         $justificativa = $this->justificativaRepository->buscarPorId($id);
 
-        abort_if(! $justificativa, 404, 'Justificativa não encontrada.');
+        abort_if(! $justificativa, 404, 'Justificativa no encontrada.');
 
         $this->authorize('view', $justificativa);
 
@@ -78,7 +79,7 @@ class JustificativaController extends Controller
     public function aprovar(UpdateJustificativaRequest $request, int $id): JustificativaResource
     {
         $justificativa = $this->justificativaRepository->buscarPorId($id);
-        abort_if(! $justificativa, 404, 'Justificativa não encontrada.');
+        abort_if(! $justificativa, 404, 'Justificativa no encontrada.');
 
         $this->authorize('aprovar', $justificativa);
 
@@ -94,7 +95,7 @@ class JustificativaController extends Controller
     public function rejeitar(UpdateJustificativaRequest $request, int $id): JustificativaResource
     {
         $justificativa = $this->justificativaRepository->buscarPorId($id);
-        abort_if(! $justificativa, 404, 'Justificativa não encontrada.');
+        abort_if(! $justificativa, 404, 'Justificativa no encontrada.');
 
         $this->authorize('rejeitar', $justificativa);
 
@@ -107,3 +108,6 @@ class JustificativaController extends Controller
         return new JustificativaResource($justificativa);
     }
 }
+
+
+

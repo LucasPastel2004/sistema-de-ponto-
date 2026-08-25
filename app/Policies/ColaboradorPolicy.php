@@ -9,7 +9,7 @@ use App\Models\User;
 
 class ColaboradorPolicy
 {
-    public function viewAny(User $user): bool
+    public function viewAny(): bool
     {
         return true;
     }
@@ -32,3 +32,4 @@ class ColaboradorPolicy
         return false;
     }
 }
+

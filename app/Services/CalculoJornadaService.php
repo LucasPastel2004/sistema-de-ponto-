@@ -84,7 +84,7 @@ class CalculoJornadaService
         $escala = $colaborador->escala;
         $cargaDiariaHoras = $escala ? (float) $escala->carga_horaria_diaria : 8.0;
 
-        foreach ($pontosPorDia as $data => $pontosDoDia) {
+        foreach ($pontosPorDia as $pontosDoDia) {
             $diasTrabalhados++;
             $horasDia = $this->calcularHorasTrabalhadas($pontosDoDia);
             $totalHorasTrabalhadas += $horasDia;
@@ -125,7 +125,7 @@ class CalculoJornadaService
     private function calcularDiasUteisEsperados(int $mes, int $ano, ?array $diasTrabalho = null): int
     {
         // Dias de trabalho padrão: segunda (1) a sexta (5)
-        $diasDaSemana = (is_array($diasTrabalho) && count($diasTrabalho) > 0)
+        $diasDaSemana = (is_array($diasTrabalho) && !empty($diasTrabalho))
             ? $diasTrabalho
             : [1, 2, 3, 4, 5];
 
