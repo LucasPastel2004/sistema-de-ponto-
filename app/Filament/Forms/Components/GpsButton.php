@@ -13,10 +13,11 @@ class GpsButton extends Placeholder
     {
         return parent::make($name)
             ->label('')
-            ->content(function ($statePath) {
+            ->content(function (\Filament\Forms\Components\Component $component) {
+                $statePath = $component->getStatePath();
                 // Determine the base path to set latitude/longitude
                 $basePath = Str::contains($statePath, '.') 
-                    ? 'data.' . Str::beforeLast($statePath, '.') 
+                    ? Str::beforeLast($statePath, '.') 
                     : 'data';
 
                 return new HtmlString(Blade::render('
