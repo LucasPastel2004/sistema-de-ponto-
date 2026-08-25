@@ -94,10 +94,9 @@ class EmpresaResource extends Resource
                     ->columnSpanFull()
                     ->helperText('Adicione polos adicionais onde o funcionário também está autorizado a bater o ponto.'),
                 Forms\Components\Toggle::make('bloqueia_ponto_fora_horario')
-                            ->label('Bloquear Ponto Fora do Horário')
-                            ->default(false)
-                            ->helperText('Se ativado, impede a marcação se o funcionário estiver com atraso ou adiantamento além da tolerância.'),
-                    ])->columns(2),
+                    ->label('Bloquear Ponto Fora do Horário')
+                    ->default(false)
+                    ->helperText('Se ativado, impede a marcação se o funcionário estiver com atraso ou adiantamento além da tolerância.'),
                 Forms\Components\Toggle::make('ativa')
                     ->default(true),
             ]);
