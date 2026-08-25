@@ -61,6 +61,10 @@ class AppServiceProvider extends ServiceProvider
         \Filament\Support\Facades\FilamentView::registerRenderHook(
             \Filament\View\PanelsRenderHook::HEAD_END,
             function (): string {
+                if (! request()->routeIs('filament.*.auth.*')) {
+                    return '';
+                }
+
                 return '<style>
                 html {
                     background-image: linear-gradient(135deg, #00152b, #003366, #00509E, #003366, #00152b) !important;
