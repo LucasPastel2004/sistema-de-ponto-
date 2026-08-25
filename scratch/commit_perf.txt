@@ -1,0 +1,11 @@
+perf: aplica recomendacoes do relatorio de performance e acelera dashboard
+
+- Adicionado `Cache::remember` (2 min TTL) nas 4 queries pesadas do `ResumoJornadaWidget`.
+- PollingInterval alterado de 60s para 5m nos widgets do dashboard para reduzir sobrecarga de DB em abas abertas.
+- Propriedade `$isLazy = true` habilitada nos 3 widgets (skeleton loading) pro dashboard carregar a tela primeiro e as queries depois.
+- PontoResource agora busca do DB apenas 6 colunas (`select()`) em vez de todas, economizando payload do payload JSONB (device_info).
+- ColaboradorResource teve `preload(false)` ativado nos selects de relacionamento (Empresa, Depto, Escala) para nao baixar tabelas inteiras no render da pagina.
+- OPcache config corrigido para `validate_timestamps=0` no Docker (elimina stat() IO loop).
+- Nginx config teve um upstream com `keepalive 32` habilitado.
+- Adicionada migration para criar indices DB (`status` nas justificativas, `ativo` e `empresa_id` em colaboradores).
+- Rodados os comandos `config:cache`, `route:cache`, `view:cache` e `filament:optimize` no app.

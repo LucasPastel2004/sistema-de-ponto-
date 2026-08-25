@@ -32,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('')
             ->login(Login::class)
-            ->emailVerification()
+            ->emailVerification(\App\Filament\Pages\CustomEmailVerificationPrompt::class)
             ->colors([
                 'primary' => Color::hex('#F15A24'), // Laranja Unopar
                 'danger' => Color::Rose,
