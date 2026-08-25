@@ -68,19 +68,23 @@ class ResumoJornadaWidget extends BaseWidget
                 ->description('Registros efetuados hoje')
                 ->descriptionIcon('heroicon-m-clock')
                 ->chart([7, 2, 10, 3, 15, 4, 17])
-                ->color('success'),
+                ->color('success')
+                ->url(\App\Filament\Resources\PontoResource::getUrl('index')),
             Stat::make('Colaboradores Presentes', $presentes)
                 ->description('Em jornada')
                 ->descriptionIcon('heroicon-m-users')
-                ->color('primary'),
+                ->color('primary')
+                ->url(\App\Filament\Resources\ColaboradorResource::getUrl('index')),
             Stat::make('Justificativas Pendentes', $justificativasPendentes)
                 ->description('Aguardando aprovação')
                 ->descriptionIcon('heroicon-m-document-text')
-                ->color('warning'),
+                ->color('warning')
+                ->url(\App\Filament\Resources\JustificativaResource::getUrl('index')),
             Stat::make('Alertas de Omissão', $omissao)
                 ->description('Sem registro hoje')
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
-                ->color('danger'),
+                ->color('danger')
+                ->url(\App\Filament\Resources\ColaboradorResource::getUrl('index')),
         ];
     }
 }

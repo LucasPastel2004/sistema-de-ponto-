@@ -33,17 +33,20 @@ class AdminStatsOverview extends BaseWidget
             Stat::make('Total de Colaboradores', $totalColaboradores)
                 ->description('Cadastrados no sistema')
                 ->descriptionIcon('heroicon-m-users')
-                ->color('info'),
+                ->color('info')
+                ->url(\App\Filament\Resources\ColaboradorResource::getUrl('index')),
                 
             Stat::make('Registros de Ponto Hoje', $pontosHoje)
                 ->description('Batidas realizadas hoje')
                 ->descriptionIcon('heroicon-m-clock')
-                ->color('success'),
+                ->color('success')
+                ->url(\App\Filament\Resources\PontoResource::getUrl('index')),
                 
             Stat::make('Justificativas Pendentes', $justificativasPendentes)
                 ->description($justificativasPendentes > 0 ? 'Aguardando aprovação' : 'Tudo em dia')
                 ->descriptionIcon('heroicon-m-exclamation-circle')
-                ->color($justificativasPendentes > 0 ? 'warning' : 'success'),
+                ->color($justificativasPendentes > 0 ? 'warning' : 'success')
+                ->url(\App\Filament\Resources\JustificativaResource::getUrl('index')),
         ];
     }
 }
