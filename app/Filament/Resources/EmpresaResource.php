@@ -93,12 +93,13 @@ class EmpresaResource extends Resource
                             ->numeric()
                             ->helperText('Ex: -46.633308')
                             ->maxLength(20),
+                        \App\Filament\Forms\Components\GpsButton::make('gps_matriz'),
                         Forms\Components\TextInput::make('raio_ponto_metros')
                             ->label('Raio Permitido (metros)')
                             ->numeric()
                             ->default(20)
                             ->helperText('Distância máxima permitida.'),
-                    ]),
+                    ])->columns(4),
                 Forms\Components\Repeater::make('polos')
                     ->label('Outros Polos / Filiais (Opcional)')
                     ->schema([
@@ -111,13 +112,14 @@ class EmpresaResource extends Resource
                         Forms\Components\TextInput::make('longitude')
                             ->numeric()
                             ->required(),
+                        \App\Filament\Forms\Components\GpsButton::make('gps_polo'),
                         Forms\Components\TextInput::make('raio_ponto_metros')
                             ->label('Raio (metros)')
                             ->numeric()
                             ->default(20)
                             ->required(),
                     ])
-                    ->columns(4)
+                    ->columns(5)
                     ->columnSpanFull()
                     ->helperText('Adicione polos adicionais onde o funcionário também está autorizado a bater o ponto.'),
                 Forms\Components\Toggle::make('bloqueia_ponto_fora_horario')
