@@ -128,6 +128,16 @@ class ColaboradorResource extends Resource
                     ->trueLabel('Apenas Ativos')
                     ->falseLabel('Apenas Inativos')
                     ->default(true),
+                Tables\Filters\TernaryFilter::make('presenca_hoje')
+                    ->label('Presença Hoje')
+                    ->placeholder('Todos')
+                    ->trueLabel('Presentes')
+                    ->falseLabel('Ausentes (Omissão)')
+                    ->queries(
+                        true: fn ($query) => $query->whereHas('pontos', fn($q) => $q->whereDate('registrado_em', today())),
+                        false: fn ($query) => $query->whereDoesntHave('pontos', fn($q) => $q->whereDate('registrado_em', today())),
+                        blank: fn ($query) => $query,
+                    ),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

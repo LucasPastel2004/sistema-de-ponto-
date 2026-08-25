@@ -69,22 +69,22 @@ class ResumoJornadaWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-clock')
                 ->chart([7, 2, 10, 3, 15, 4, 17])
                 ->color('success')
-                ->url(\App\Filament\Resources\PontoResource::getUrl('index')),
+                ->url(\App\Filament\Resources\PontoResource::getUrl('index') . '?tableFilters[registrado_em][registrado_de]=' . today()->format('Y-m-d') . '&tableFilters[registrado_em][registrado_ate]=' . today()->format('Y-m-d')),
             Stat::make('Colaboradores Presentes', $presentes)
                 ->description('Em jornada')
                 ->descriptionIcon('heroicon-m-users')
                 ->color('primary')
-                ->url(\App\Filament\Resources\ColaboradorResource::getUrl('index')),
+                ->url(\App\Filament\Resources\ColaboradorResource::getUrl('index') . '?tableFilters[presenca_hoje][value]=1'),
             Stat::make('Justificativas Pendentes', $justificativasPendentes)
                 ->description('Aguardando aprovação')
                 ->descriptionIcon('heroicon-m-document-text')
                 ->color('warning')
-                ->url(\App\Filament\Resources\JustificativaResource::getUrl('index')),
+                ->url(\App\Filament\Resources\JustificativaResource::getUrl('index') . '?tableFilters[status][value]=pendente'),
             Stat::make('Alertas de Omissão', $omissao)
                 ->description('Sem registro hoje')
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color('danger')
-                ->url(\App\Filament\Resources\ColaboradorResource::getUrl('index')),
+                ->url(\App\Filament\Resources\ColaboradorResource::getUrl('index') . '?tableFilters[presenca_hoje][value]=0'),
         ];
     }
 }

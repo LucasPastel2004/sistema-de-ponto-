@@ -40,13 +40,13 @@ class AdminStatsOverview extends BaseWidget
                 ->description('Batidas realizadas hoje')
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('success')
-                ->url(\App\Filament\Resources\PontoResource::getUrl('index')),
+                ->url(\App\Filament\Resources\PontoResource::getUrl('index') . '?tableFilters[registrado_em][registrado_de]=' . today()->format('Y-m-d') . '&tableFilters[registrado_em][registrado_ate]=' . today()->format('Y-m-d')),
                 
             Stat::make('Justificativas Pendentes', $justificativasPendentes)
                 ->description($justificativasPendentes > 0 ? 'Aguardando aprovação' : 'Tudo em dia')
                 ->descriptionIcon('heroicon-m-exclamation-circle')
                 ->color($justificativasPendentes > 0 ? 'warning' : 'success')
-                ->url(\App\Filament\Resources\JustificativaResource::getUrl('index')),
+                ->url(\App\Filament\Resources\JustificativaResource::getUrl('index') . '?tableFilters[status][value]=pendente'),
         ];
     }
 }
