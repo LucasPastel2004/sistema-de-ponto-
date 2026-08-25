@@ -135,6 +135,8 @@ class AppServiceProvider extends ServiceProvider
                 
                 /* Button Customization */
                 .fi-btn { border-radius: 0.75rem !important; font-weight: bold !important; }
+                /* Oculta texto quebrado "Avat" do avatar */
+                .fi-user-avatar { color: transparent !important; text-indent: -9999px; }
             </style>';
             }
         );
