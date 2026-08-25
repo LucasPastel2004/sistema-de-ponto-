@@ -122,7 +122,12 @@ class ColaboradorResource extends Resource
                 Tables\Filters\SelectFilter::make('empresa_id')
                     ->relationship('empresa', 'razao_social')
                     ->label('Empresa'),
-                Tables\Filters\TernaryFilter::make('ativo'),
+                Tables\Filters\TernaryFilter::make('ativo')
+                    ->label('Status')
+                    ->placeholder('Todos')
+                    ->trueLabel('Apenas Ativos')
+                    ->falseLabel('Apenas Inativos')
+                    ->default(true),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -41,6 +41,19 @@ class Empresa extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::deleted(function (Empresa $empresa) {
+            // Desativa os colaboradores vinculados quando a empresa é excluída (soft delete)
+            if (! $empresa->isForceDeleting()) {
+                $empresa->colaboradores()->update([
+                    'ativo' => false,
+                    'data_demissao' => now(),
+                ]);
+            }
+        });
+    }
+
     public function departamentos(): HasMany
     {
         return $this->hasMany(Departamento::class);
