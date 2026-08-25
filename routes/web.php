@@ -24,9 +24,9 @@ Route::get('/verificar-email/{id}/{hash}', function ($id, $hash) {
 })->middleware(['signed'])->name('custom.verification.verify');
 
 
-Route::get('/toggle-mode', function () {
+Route::match(['get', 'post'], '/toggle-mode', function () {
     $current = session('view_mode', 'admin');
     session(['view_mode' => $current === 'admin' ? 'colaborador' : 'admin']);
-    return back();
+    return redirect('/');
 })->name('toggle.mode')->middleware(['web', 'auth']);
 
