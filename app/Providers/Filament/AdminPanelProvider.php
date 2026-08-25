@@ -87,6 +87,7 @@ class AdminPanelProvider extends PanelProvider
                     )
                     ->myProfileComponents([
                         'personal_info' => \App\Filament\Pages\CustomPersonalInfo::class,
+                        'update_avatar' => \App\Filament\Pages\UpdateAvatar::class,
                     ])
                     ->enableTwoFactorAuthentication(
                         force: false,
