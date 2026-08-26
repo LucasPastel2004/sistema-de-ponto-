@@ -10,7 +10,15 @@ use Illuminate\Support\Facades\Route;
 
 // Rota padrão /api/user para autenticação Sanctum
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return response()->json($request->user());
+    $user = $request->user();
+    return response()->json([
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'roles' => $user->getRoleNames(),
+        'permissions' => $user->getAllPermissions()->pluck('name'),
+        // Nunca retornar o modelo cru para evitar vazamento de hashed passwords, tokens ou recovery codes 
+    ]);
 });
 
 Route::prefix('v1')->middleware(['auth:sanctum', 'throttle:api'])->group(function () {

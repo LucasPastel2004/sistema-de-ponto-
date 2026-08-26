@@ -6,6 +6,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ColaboradorResource\Pages;
 use App\Filament\Resources\ColaboradorResource\RelationManagers\PontosRelationManager;
+use App\Filament\Resources\ColaboradorResource\RelationManagers\BancoHorasLogsRelationManager;
 use App\Models\Colaborador;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -111,6 +112,22 @@ class ColaboradorResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cargo')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('saldo_horas')
+                    ->label('Banco de Horas')
+                    ->badge()
+                    ->color(fn (int $state): string => match (true) {
+                        $state > 0 => 'success',
+                        $state < 0 => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(function (int $state) {
+                        $sinal = $state < 0 ? '-' : '+';
+                        $minutosAbs = abs($state);
+                        $horas = floor($minutosAbs / 60);
+                        $minutos = $minutosAbs % 60;
+                        return sprintf('%s %02dh %02dm', $sinal, $horas, $minutos);
+                    })
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('ativo')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -180,6 +197,7 @@ class ColaboradorResource extends Resource
     {
         return [
             PontosRelationManager::class,
+            BancoHorasLogsRelationManager::class,
         ];
     }
 

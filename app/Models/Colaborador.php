@@ -27,6 +27,7 @@ class Colaborador extends Model
         'cpf_hash',
         'matricula',
         'cargo',
+        'saldo_horas',
         'data_admissao',
         'data_demissao',
         'ativo',
@@ -89,6 +90,16 @@ class Colaborador extends Model
     public function justificativas(): HasMany
     {
         return $this->hasMany(Justificativa::class);
+    }
+
+    public function bancoHorasLogs(): HasMany
+    {
+        return $this->hasMany(BancoHorasLog::class);
+    }
+
+    public function ferias(): HasMany
+    {
+        return $this->hasMany(Ferias::class);
     }
 
     public function scopeAtivos(Builder $query): Builder

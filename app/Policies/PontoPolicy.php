@@ -21,9 +21,19 @@ class PontoPolicy
         return $this->canAccessColaborador($user, $ponto->colaborador_id, ['gerenciar-pontos']);
     }
 
-    public function create(User $user): bool
+    public function create(User $user, ?int $colaboradorId = null): bool
     {
-        return session('view_mode', 'admin') === 'admin' && ($user->hasRole('admin') || $user->hasPermissionTo('gerenciar-pontos'));
+        $hasPermission = session('view_mode', 'admin') === 'admin' && ($user->hasRole('admin') || $user->hasPermissionTo('gerenciar-pontos'));
+        
+        if (! $hasPermission) {
+            return false;
+        }
+
+        if ($colaboradorId === null) {
+            return true; // Admin geral acessando sem ID específico
+        }
+
+        return $this->canAccessColaborador($user, $colaboradorId, ['gerenciar-pontos']);
     }
 
     public function update(User $user, Ponto $ponto): bool

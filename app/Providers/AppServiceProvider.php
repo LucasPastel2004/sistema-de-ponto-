@@ -13,6 +13,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use App\Models\Ponto;
+use App\Observers\PontoObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Ponto::observe(PontoObserver::class);
+
         VerifyEmail::createUrlUsing(function ($notifiable) {
             return URL::temporarySignedRoute(
                 'custom.verification.verify',
@@ -67,7 +71,7 @@ class AppServiceProvider extends ServiceProvider
 
                 return '<style>
                 html {
-                    background-image: linear-gradient(135deg, #00152b, #003366, #00509E, #003366, #00152b) !important;
+                    background-image: linear-gradient(135deg, #000000, #111111, #222222, #111111, #000000) !important;
                     background-size: 200% 200% !important;
                     animation: gradientPulse 12s ease-in-out infinite;
                     min-height: 100vh;
@@ -93,9 +97,13 @@ class AppServiceProvider extends ServiceProvider
                     backdrop-filter: blur(16px);
                     -webkit-backdrop-filter: blur(16px);
                     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-                    border-top: 4px solid #F15A24 !important;
                     box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important;
                     border-radius: 1rem !important;
+                }
+
+                /* Mais espaço interno na box central de Auth */
+                .fi-simple-main section {
+                    padding: 48px !important;
                 }
 
                 /* Sidebar e Topbar com vidro fosco mais escuro para não brigar com o fundo */
