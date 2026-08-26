@@ -32,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Ponto::observe(PontoObserver::class);
+        \App\Models\Justificativa::observe(\App\Observers\JustificativaObserver::class);
 
         VerifyEmail::createUrlUsing(function ($notifiable) {
             return URL::temporarySignedRoute(
